@@ -1,0 +1,6 @@
+# XR 源：mock（无头显联调）
+type: mock
+hz: 50.0
+radius: 0.15
+left_grip: 1.0
+right_grip: 1.0

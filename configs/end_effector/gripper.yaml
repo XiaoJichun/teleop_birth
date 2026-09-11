@@ -1,0 +1,4 @@
+# 末端：平行夹爪（Robotiq 2F-85 风格）
+type: gripper
+ctrl_open: 0.0
+ctrl_closed: 255.0

@@ -1,0 +1,22 @@
+# 映射：双臂手柄 → SparseTarget
+type: dual_arm
+# 位移增益：手柄移动 1m → 机械臂约 scale 米（偏小会「够不着」）
+scale: 1.35
+filter_alpha: 0.92
+map_head: false
+
+clutch_mode: long_press_grip
+hold_s: 0.25
+grip_threshold: 0.45
+
+reset_buttons_left: ["y", "left_menu"]
+reset_buttons_right: ["b", "right_menu"]
+
+position_only: true
+# 每周期最大位移（米）；过小会跟不上手
+max_step_m: 0.08
+# 工作空间球半径；过小会到不了想要的位置
+workspace_radius_m: 0.85
+workspace_center:
+  left_ee: [-0.45, 0.30, 0.50]
+  right_ee: [0.45, 0.30, 0.50]

@@ -1,0 +1,92 @@
+# Pico / XRobo — 本地解压运行（无需 sudo）
+pc_service:
+  deb_url: "https://github.com/XR-Robotics/XRoboToolkit-PC-Service/releases/download/v1.0.0/XRoboToolkit_PC_Service_1.0.0_ubuntu_22.04_amd64.deb"
+  deb_filename: "XRoboToolkit_PC_Service_1.0.0_ubuntu_22.04_amd64.deb"
+  download_dir: "third_party/xrobo_downloads"
+  # 解压根目录（相对仓库）；服务从此处启动，不依赖 /opt
+  extract_dir: "third_party/xrobo_runtime"
+  service_rel_dir: "opt/apps/roboticsservice"
+  run_script_name: "runService.sh"
+  process_name: "RoboticsServiceProcess"
+  # 可选：系统安装路径（有 sudo 时）
+  system_install_dir: "/opt/apps/roboticsservice"
+  system_run_script: "/opt/apps/roboticsservice/runService.sh"
+
+pico_apk:
+  apk_url: "https://github.com/XR-Robotics/XRoboToolkit-Unity-Client/releases/download/v1.1.1/XRoboToolkit-PICO-1.1.1.apk"
+  apk_filename: "XRoboToolkit-PICO-1.1.1.apk"
+
+# adb 非 Python 依赖，由 install_xrobo.sh 本地安装（不走 uv）
+adb:
+  platform_tools_url: "https://dl.google.com/android/repository/platform-tools-latest-linux.zip"
+  zip_filename: "platform-tools-latest-linux.zip"
+  install_dir: "third_party/platform-tools"   # 解压后含 adb 可执行文件
+  shim_dir: "tools/bin"                      # 项目内 PATH 入口
+
+pybind:
+  repo_url: "https://github.com/XR-Robotics/XRoboToolkit-PC-Service-Pybind.git"
+  local_dir: "third_party/XRoboToolkit-PC-Service-Pybind"
+  venv_lib_subdir: "lib/xrobo"   # 相对 .venv，存放 libPXREARobotSDK.so
+
+# 一键 Pico 仿真遥操的 Hydra overrides
+one_click_pico_sim:
+  overrides:
+    - "source=xrobo"
+    - "backend=mujoco_dual_ur"
+    - "mapper=dual_arm"
+    - "end_effector=gripper"
+    - "runtime.render=true"
+    - "runtime.duration_s=0"
+    - "runtime.log_enabled=true"
+    - "runtime.interactive_confirm=false"
+    - "runtime.hz=60.0"
+    - "runtime.scale=1.35"
+    - "runtime.print_every=20"
+    - "mapper.clutch_mode=long_press_grip"
+    - "mapper.hold_s=0.25"
+    - "mapper.grip_threshold=0.45"
+    - "mapper.position_only=true"
+    - "mapper.filter_alpha=0.92"
+    - "mapper.max_step_m=0.08"
+    - "mapper.workspace_radius_m=0.85"
+    - "backend.ik.position_only=true"
+    - "backend.ik.iters=14"
+    - "backend.ik.max_dq=0.18"
+    - "backend.ik.viewer_sync_every=2"
+    - "backend.sim_substeps=1"
+
+# Pico 掉线检测（默认不自动重连，避免手静止时被误判）
+# 仅当 get_time_stamp_ns 长时间不更新才判定掉线；需要时可 enabled: true
+reconnect:
+  enabled: false
+  stale_s: 5.0
+  cooldown_s: 8.0
+
+api:
+  init: "init"
+  close: "close"
+  head_pose: "get_headset_pose"
+  left_controller_pose: "get_left_controller_pose"
+  right_controller_pose: "get_right_controller_pose"
+  left_grip: "get_left_grip"
+  right_grip: "get_right_grip"
+  left_trigger: "get_left_trigger"
+  right_trigger: "get_right_trigger"
+  button_a: "get_A_button"
+  button_b: "get_B_button"
+  button_x: "get_X_button"
+  button_y: "get_Y_button"
+  left_menu: "get_left_menu_button"
+  right_menu: "get_right_menu_button"
+  left_axis: "get_left_axis"
+  right_axis: "get_right_axis"
+  left_axis_click: "get_left_axis_click"
+  right_axis_click: "get_right_axis_click"
+  timestamp_ns: "get_time_stamp_ns"
+  body_available: "is_body_data_available"
+  body_poses: "get_body_joints_pose"
+
+preflight:
+  require_sdk_import: true
+  require_service_running: true
+  hint_doc: "doc/Pico连接指南.md"

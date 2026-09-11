@@ -1,0 +1,7 @@
+# 末端：灵巧手占位（标量 openness → 均匀屈指，直至接上 dex-retargeting）
+type: dex_hand
+n_fingers: 5
+proxy_use_gripper_actuator: true
+# 代理驱动 2F-85 时的开合行程（与 gripper.yaml 对齐）
+ctrl_open: 0.0
+ctrl_closed: 255.0

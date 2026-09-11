@@ -1,0 +1,14 @@
+# 交互菜单选项标签（扫描 configs 子目录时用；缺省则显示文件名）
+source:
+  mock: "Mock XR（无头显）"
+  xrobo: "Pico / XRoboToolkit"
+backend:
+  mock_dual_arm: "Mock 双臂（内存）"
+  mujoco_dual_ur: "MuJoCo 双 UR5e + 夹爪"
+  g1_stub: "G1 占位（人形预留）"
+mapper:
+  dual_arm: "双臂 Mapper"
+  humanoid: "人形 Mapper（body/trackers）"
+end_effector:
+  gripper: "平行夹爪"
+  dex_hand: "灵巧手（占位）"

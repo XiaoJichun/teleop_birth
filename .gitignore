@@ -1,0 +1,20 @@
+logs/
+outputs/
+*.pyc
+__pycache__/
+.pytest_cache/
+*.egg-info/
+dist/
+build/
+.venv/
+*.jsonl
+.DS_Store
+
+# third_party：大体积依赖本地安装脚本拉取，勿提交
+third_party/xrobo_downloads/
+third_party/xrobo_runtime/
+third_party/xrobo_pybind_build/
+third_party/platform-tools/
+third_party/XRoboToolkit-PC-Service-Pybind/
+third_party/mujoco_menagerie/
+tools/bin/adb

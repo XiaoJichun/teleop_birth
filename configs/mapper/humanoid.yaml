@@ -1,0 +1,26 @@
+# 映射：人形扩展（双臂基础上 + body/trackers）
+type: humanoid
+dual_arm:
+  scale: 1.35
+  filter_alpha: 0.92
+  map_head: false
+  clutch_mode: long_press_grip
+  hold_s: 0.25
+  grip_threshold: 0.45
+  reset_buttons_left: ["y", "left_menu"]
+  reset_buttons_right: ["b", "right_menu"]
+  position_only: true
+  max_step_m: 0.08
+  workspace_radius_m: 0.85
+  workspace_center:
+    left_ee: [-0.45, 0.30, 0.50]
+    right_ee: [0.45, 0.30, 0.50]
+body_joint_indices:
+  pelvis: 0
+  left_ankle: 7
+  right_ankle: 8
+  head: 15
+  left_wrist: 22
+  right_wrist: 23
+tracker_left_keywords: ["left", "_l", "-l"]
+tracker_right_keywords: ["right", "_r", "-r"]
