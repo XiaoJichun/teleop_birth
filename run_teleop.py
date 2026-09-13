@@ -9,8 +9,8 @@ from pathlib import Path
 import hydra
 from omegaconf import DictConfig, OmegaConf
 
-from birth_teleop.cli import tui
-from birth_teleop.config.factory import build_teleop_loop
+from teleop_birth.cli import tui
+from teleop_birth.config.factory import build_teleop_loop
 
 
 def _project_root() -> Path:
@@ -26,8 +26,8 @@ def main(cfg: DictConfig) -> None:
     print(OmegaConf.to_yaml(cfg))
 
     if str(cfg.source.type).lower() == "xrobo":
-        from birth_teleop.xr.env import apply_xrobo_library_path
-        from birth_teleop.xr.sources import check_xrobo_sdk_available
+        from teleop_birth.xr.env import apply_xrobo_library_path
+        from teleop_birth.xr.sources import check_xrobo_sdk_available
 
         apply_xrobo_library_path(root)
         ok, msg = check_xrobo_sdk_available(root)

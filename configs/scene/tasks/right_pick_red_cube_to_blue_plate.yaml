@@ -1,0 +1,27 @@
+# =============================================================================
+# 语义任务：右臂夹红方块 → 放蓝盘子
+# 被 scene/cli.yaml → collect.task 引用；改指令/物体/阶段：本文件
+# =============================================================================
+name: right_pick_red_cube_to_blue_plate
+instruction_zh: 右臂夹取红色的方块，并放在蓝色的盘子里面
+instruction_en: Use the right arm to pick the red cube and place it into the blue plate
+objects:
+  - red_cube                 # → configs/scene/props/red_cube.yaml
+  - blue_plate
+episodes: 5                 # 任务默认集数；cli.collect.episodes 可覆盖
+seed: 0
+success_xy_tol_m: 0.08
+success_z_tol_m: 0.10
+stages:
+  - action: pick
+    description: 右臂夹取红色方块
+    active_object: red_cube
+    arm: right
+  - action: place
+    description: 将方块放入蓝色盘子
+    active_object: red_cube
+    passive_object: blue_plate
+    arm: right
+  - action: reset
+    description: 右臂复位
+    arm: right

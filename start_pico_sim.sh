@@ -27,7 +27,7 @@ if ! uv run python -c "import xrobotoolkit_sdk" 2>/dev/null; then
 fi
 
 # 导出动态库路径
-CFG=configs/xrobo_setup.yaml
+CFG=configs/setup/xrobo.yaml
 EXTRACT=$(uv run python -c "import yaml; from pathlib import Path; c=yaml.safe_load(Path('$CFG').read_text()); print(c['pc_service']['extract_dir'])")
 SVC_REL=$(uv run python -c "import yaml; from pathlib import Path; c=yaml.safe_load(Path('$CFG').read_text()); print(c['pc_service']['service_rel_dir'])")
 VENV_SUB=$(uv run python -c "import yaml; from pathlib import Path; c=yaml.safe_load(Path('$CFG').read_text()); print(c['pybind']['venv_lib_subdir'])")
@@ -56,7 +56,7 @@ echo
 mapfile -t OVERRIDES < <(uv run python - <<'PY'
 import yaml
 from pathlib import Path
-c = yaml.safe_load(Path("configs/xrobo_setup.yaml").read_text(encoding="utf-8"))
+c = yaml.safe_load(Path("configs/setup/xrobo.yaml").read_text(encoding="utf-8"))
 for item in c["one_click_pico_sim"]["overrides"]:
     print(item)
 PY

@@ -1,5 +1,8 @@
 # Pico 仿真遥操（一键）
 
+> 算法与数据流： [遥操作全链路详解.md](./遥操作全链路详解.md)  
+> **深入理解算法（推荐学习）**： [遥操作算法深入解析.md](./遥操作算法深入解析.md)
+
 ## 你只需要
 
 **PC 端：**
@@ -15,9 +18,10 @@ cd /root/workspace/teleop_birth
 
 1. 打开 **XRoboToolkit**，按下方「进 App 后界面怎么点」操作  
 2. **Status** 变为 **WORKING**，且 **Send** 已打开  
-3. **长按该侧 Grip ≥ 0.35s** 开始遥操（松开关闭；左右独立）  
+3. **长按该侧 Grip ≥ hold_s**（一键默认约 **0.2 s**）开始遥操（松开关闭；左右独立）  
 4. **回零**：左手 **Y** 或 **Menu**；右手 **B** 或 **Menu**（该侧手臂回 home）  
-5. **Trigger** = 夹爪  
+5. **Trigger** = 夹爪（已仿真加速；扣扳机应较快开合）  
+6. **拧腕** = 末端姿态跟随（`ori_mode=world_delta`；松 Grip 保持）
 
 首次 PC 侧会自动：解压 PC Service → 装 adb → 编译 SDK（uv）→ 启动服务 → 开仿真。
 
@@ -156,17 +160,17 @@ tools/bin/adb install -r third_party/xrobo_downloads/XRoboToolkit-PICO-1.1.1.apk
 
 1. **设置 → 通用 → 关于本机**  
 2. 连续点击 **「软件版本」约 10 次** → 打开 **开发者选项**  
-3. 进入 **开发者选项 → 企业设置 / Business Settings / 行业设置**  
+3. 进入 **开发者选项 → 企业设置 / Business Settings / 行业设置 → 特殊设置**  
 
 然后改下面几项（名称可能是中/英）：
 
 | 位置 | 选项 | 设成 |
 |------|------|------|
-| **基础设置 / 特殊设置** | **自动休眠模式 Auto Sleep Mode** | **关闭** |
-| **基础设置 → 网络** | **灭屏后保持网络连接** | **打开**（很重要） |
+| **基础设置 → 特殊设置** | **自动休眠模式 Auto Sleep Mode** | **关闭** |
+| **基础设置 → 网络设置** | **灭屏后保持网络连接** | **打开**（很重要） |
 | **系统设置 → 电源策略 Power Policy** | **系统休眠** | **永不 Never**（先改这个） |
-| 同上 | **灭屏 / Screen Off** | **永不 Never**（后改这个） |
-| **基础设置**（若有） | **充电时亮屏 Screen On when Charging** | **打开** |
+| **系统设置 → 电源策略 Power Policy** | **灭屏 / Screen Off** | **永不 Never**（后改这个） |
+| **基础设置**（若有） | **充电时亮屏 Screen On when Charging** | **打开** | 
 
 注意：电源策略里要先把「系统休眠」设成永不，再设「灭屏」，否则可能改不动。
 
@@ -192,7 +196,7 @@ bash tools/scripts/pico_keep_awake.sh
 | 依赖 | 管理方式 |
 |------|----------|
 | Python / `xrobotoolkit_sdk` | **uv**（`.venv`） |
-| PC Service、adb、APK | **`tools/scripts/install_xrobo.sh`**（路径写在 `configs/xrobo_setup.yaml`） |
+| PC Service、adb、APK | **`tools/scripts/install_xrobo.sh`**（路径写在 `configs/setup/xrobo.yaml`） |
 
 adb **不能**进 uv，由安装脚本下载 Google `platform-tools` 到 `third_party/platform-tools/`，并在 `tools/bin/adb` 提供入口。
 
@@ -203,13 +207,19 @@ adb **不能**进 uv，由安装脚本下载 Google `platform-tools` 到 `third_
 | 项 | 默认（一键 Pico） | 说明 |
 |----|-------------------|------|
 | `mapper.clutch_mode` | `long_press_grip` | 长按 Grip 才遥操；松开停止 |
-| `mapper.hold_s` | `0.35` | 长按判定时间（秒） |
+| `mapper.hold_s` | `0.2` | 长按判定时间（秒） |
 | `mapper.reset_buttons_*` | Y/Menu、B/Menu | 左右手柄各自回零 |
-| `mapper.position_only` | `true` | 只跟位置，不跟手柄姿态 |
-| `mapper.max_step_m` | `0.025` | 每周期最大位移 |
-| `runtime.hz` | `60` | 控制频率 |
+| `mapper.delta_frame` | `world` | 相对增量叠在世界系（更跟手） |
+| `mapper.xr_align` | `openxr_yup_to_zup` | OpenXR→MuJoCo 轴对齐 |
+| `mapper.position_only` | `false` | 跟位置+姿态（`ori_mode=world_delta`） |
+| `mapper.ori_mode` | `world_delta` | 房间系相对旋转；TCP 朝下时 yaw 不反号 |
+| `mapper.gripper_gamma` | `0.55` | Trigger 曲线，越小中段越灵敏 |
+| `mapper.max_step_m` | `0.08` | 每周期最大位移 |
+| `runtime.scale` | `1.0` | 位移倍率（1:1） |
+| `runtime.hz` | `150` | 控制频率 |
+| `end_effector.force_scale` | `16` | 夹爪仿真力矩放大（加速闭合） |
 
-配置入口：`configs/xrobo_setup.yaml`、`configs/mapper/dual_arm.yaml`。
+配置入口：`configs/setup/xrobo.yaml`、`configs/algorithm/mapper/dual_arm.yaml`。
 
 ---
 
@@ -223,10 +233,13 @@ adb **不能**进 uv，由安装脚本下载 Google `platform-tools` 到 `third_
 | 头显看不到 IP / 连不上 | 用「Pico 与电脑如何连接」方式 A 开热点；XRobo 选 `10.42.0.1` |
 | 无线 adb 连不上 | Pico 已连热点后用 `adb connect <PICO_IP>:5555`（不是 `10.42.0.1`）；或改用 USB |
 | WORKING 但臂不动 / `xrL` 不变 | **打开 Send**；确认 Head/Controller Tracking |
-| `active=False` 臂不动 | **长按 Grip ≥ hold_s**（默认 0.35s）并保持 |
+| `active=False` 臂不动 | **长按 Grip ≥ hold_s**（一键默认约 0.2 s）并保持 |
 | 需要回零 | 左手 **Y/Menu**，右手 **B/Menu** |
 | Pico 容易掉线 | 关休眠；保持 Send；**手静止不会再误重连**。若仍断：检查热点信号，头显里 Reconnect |
 | 终端狂刷「重连 SDK」 | 已默认关闭误判重连；请更新代码后重跑 `./start_pico_sim.sh` |
-| 跟手不够远 | 已提高 `scale=1.35`；还可在 YAML 调到 `1.6~2.0` |
+| 臂动了但方向不像手 | 确认已重启加载 `delta_frame=world`；先只测平移。前→桌深(+Y)、上→+Z、右→+X。某轴反了告诉我 |
+| 腕部乱拧 / 不像在跟手 | 确认 `ori_mode=world_delta`；可暂设 `position_only=true` 只测平移；仍怪可试 `ori_mode=track` 或调 `controller_quat_xyzw` |
+| 夹爪开合慢 | 已放大 2F-85 `force_scale` + `extra_sim_steps`；重跑一键；还可把 `gripper_gamma` 降到 `0.45` |
+| 跟手不够远 | 把 `runtime.scale` 调到 `1.3~1.6` |
 | 跟手慢/够不着 | 提高 `max_step_m`、`workspace_radius_m`；确认未顶工作空间球 |
 | 只想测仿真不要 Pico | `./start.sh` → 自定义 → `source=mock` |

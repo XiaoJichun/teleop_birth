@@ -1,0 +1,47 @@
+# =============================================================================
+# 场景 CLI 默认（生成物品 / 摆放 / 语义采集）
+# 交互菜单与 tools/scripts/scene_ops/*.py 共用；改默认行为优先改本文件。
+# =============================================================================
+
+# ----- 生成道具（写入 MJCF / 预览）-----
+generate:
+  props:              # 道具名 → configs/scene/props/<name>.yaml
+    - red_cube
+    - blue_plate
+  render: false       # 是否打开 MuJoCo 窗口预览
+  settle_steps: 100   # 生成后物理稳定步数
+
+# ----- 随机摆放 -----
+place:
+  props:
+    - red_cube
+    - blue_plate
+  seed: 0             # 布局随机种子
+  repeats: 3          # 连续摆放次数
+  render: false
+
+# ----- 语义自动化采集 → MCAP -----
+collect:
+  # 任务定义：configs/scene/tasks/<task>.yaml
+  task: right_pick_red_cube_to_blue_plate
+  episodes: 3
+  seed: 0
+  arm: right                # left | right
+  render: true              # 打开 MuJoCo 窗口盯着看
+  pace_s: 0.02              # 秒/控制步；0=尽快；观摩建议 0.01~0.03
+  output_dir: logs/mcap
+  steps_per_segment: 40     # 每段笛卡尔插值步数（越大越平滑、越慢）
+  hold_steps: 0             # 段末停顿步数；0=流畅不停顿
+  sticky_grasp: true        # 粘性抓取（对齐夹爪内 + 关闭碰撞，避免穿模）
+
+  # 相机机位 / Foxglove topic：见 recording 文件（第三人称 + 双腕）
+  recording: scene/recording.yaml
+  # 仅开关；宽高/机位/话题名请改 recording.yaml
+  camera:
+    enabled: true
+
+  # 相对 configs/ 的配置组
+  backend: device/backend/mujoco_dual_ur.yaml
+  ik: algorithm/ik/dls.yaml
+  end_effector: device/end_effector/gripper.yaml
+  paths: device/paths/default.yaml

@@ -1,5 +1,0 @@
-# XR 源：Pico + XRoboToolkit PC Service
-type: xrobo
-include_body: false
-# 详细安装/API 映射见 configs/xrobo_setup.yaml
-setup_config: "configs/xrobo_setup.yaml"

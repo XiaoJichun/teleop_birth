@@ -1,26 +1,16 @@
-# Hydra 主配置：defaults 组合 + 运行时参数（全部可被交互/CLI 覆盖）
+# =============================================================================
+# Hydra 主配置（遥操入口）
+# 场景采集不经过本文件，见 configs/scene/cli.yaml
+#
+# 真实内容在 algorithm/ 与 device/；根目录 symlink 仅用于短 override：
+#   ik=ssik  source=xrobo  backend=mujoco_dual_ur
+# =============================================================================
 defaults:
-  - source: mock
-  - backend: mujoco_dual_ur
-  - mapper: dual_arm
-  - end_effector: gripper
+  - runtime: default      # algorithm/runtime — 频率/时长
+  - ik: dls               # algorithm/ik — 逆解求解器
+  - mapper: dual_arm      # algorithm/mapper — 相对遥操映射
+  - source: mock          # device/source — 输入源（mock|xrobo）
+  - backend: mujoco_dual_ur  # device/backend — 仿真/真机
+  - end_effector: gripper # device/end_effector
+  - paths: default        # device/paths
   - _self_
-
-runtime:
-  hz: 50.0
-  duration_s: 8.0          # <=0 表示直到 Ctrl+C
-  scale: 1.0               # XR 位移缩放（也会写入 mapper）
-  render: false
-  log_enabled: false
-  log_path: ""             # 空且 log_enabled=true 时用 paths.logs_dir 自动生成
-  print_every: 25
-  latency_window: 300
-  interactive_confirm: true
-
-paths:
-  project_root: "."        # 相对 run 时的 cwd；start.sh 会在仓库根执行
-  menagerie: "third_party/mujoco_menagerie"
-  logs_dir: "logs"
-  configs_dir: "configs"
-
-# 交互菜单本身也由 YAML 定义，见 menu.yaml（不走 Hydra defaults）

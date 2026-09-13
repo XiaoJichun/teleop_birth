@@ -1,0 +1,14 @@
+# =============================================================================
+# IK：阻尼最小二乘 DLS（默认，无 GPU 依赖）
+# 切换求解器：Hydra override ik=ssik | ik=curobo，或改 config.yaml defaults
+# =============================================================================
+solver: dls
+fallback: dls
+iters: 20              # 每控制步迭代次数
+damping: 0.04          # 阻尼；过大跟手钝，过小易抖
+pos_weight: 1.0
+rot_weight: 0.85
+max_dq: 0.28           # 单步关节增量上限 (rad)
+err_tol: 0.0008
+position_only: false   # 采集脚本会强制 true（只跟位置）
+viewer_sync_every: 1   # 可视化同步频率（每 N 步）

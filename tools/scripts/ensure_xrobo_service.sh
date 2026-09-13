@@ -3,7 +3,7 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
-CFG="$ROOT/configs/xrobo_setup.yaml"
+CFG="$ROOT/configs/setup/xrobo.yaml"
 
 read_cfg() {
   local key="$1"

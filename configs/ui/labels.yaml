@@ -1,0 +1,29 @@
+# =============================================================================
+# 交互菜单显示名（值仍对应 configs 里的文件 stem）
+# =============================================================================
+source:
+  mock: "Mock XR（无头显）"
+  xrobo: "Pico / XRoboToolkit"
+backend:
+  mock_dual_arm: "Mock 双臂（内存）"
+  mujoco_dual_ur: "MuJoCo 双 UR5e + 夹爪 [sim]"
+  g1_stub: "G1 占位 [real]"
+ik:
+  dls: "DLS 雅可比（默认）"
+  ssik: "SSIK 解析 IK"
+  curobo: "cuRobo GPU IK"
+mapper:
+  dual_arm: "双臂 Mapper"
+  humanoid: "人形 Mapper（body/trackers）"
+end_effector:
+  gripper: "平行夹爪"
+  dex_hand: "灵巧手（占位）"
+
+# 场景物品（configs/scene/props）
+props:
+  red_cube: "红色方块"
+  blue_plate: "蓝色盘子"
+
+# 语义任务（configs/scene/tasks）
+tasks:
+  right_pick_red_cube_to_blue_plate: "右臂：红方块 → 蓝盘子"

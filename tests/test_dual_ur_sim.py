@@ -10,13 +10,13 @@ import yaml
 
 mujoco = pytest.importorskip("mujoco")
 
-from birth_teleop.backend import G1BackendStub, MujocoDualURBackend
-from birth_teleop.ee import DexHandStub, EECommand, ParallelGripper
-from birth_teleop.mapping import DualArmMapper
-from birth_teleop.pipeline import TeleopLoop
-from birth_teleop.schema import EXTREMITY_LEFT_EE, EXTREMITY_RIGHT_EE, SparseTarget, identity_pose
-from birth_teleop.sim import build_dual_ur5e_2f85
-from birth_teleop.xr import MockXRSource
+from teleop_birth.backend import G1BackendStub, MujocoDualURBackend
+from teleop_birth.ee import DexHandStub, EECommand, ParallelGripper
+from teleop_birth.mapping import DualArmMapper
+from teleop_birth.pipeline import TeleopLoop
+from teleop_birth.schema import EXTREMITY_LEFT_EE, EXTREMITY_RIGHT_EE, SparseTarget, identity_pose
+from teleop_birth.sim import build_dual_ur5e_2f85
+from teleop_birth.xr import MockXRSource
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -27,7 +27,7 @@ def _load(rel: str) -> dict:
 
 
 def test_build_dual_model_from_yaml():
-    scene = _load("configs/backend/mujoco_dual_ur.yaml")["scene"]
+    scene = _load("configs/device/backend/mujoco_dual_ur.yaml")["scene"]
     menagerie = ROOT / "third_party" / "mujoco_menagerie"
     model, name_map = build_dual_ur5e_2f85(menagerie, scene)
     assert model.nu == 14
@@ -58,14 +58,15 @@ def test_dex_stub_accepts_scalar():
 
 
 def test_mujoco_dual_ur_teleop_loop():
-    backend_cfg = _load("configs/backend/mujoco_dual_ur.yaml")
-    ee_cfg = _load("configs/end_effector/gripper.yaml")
+    backend_cfg = _load("configs/device/backend/mujoco_dual_ur.yaml")
+    ik_cfg = _load("configs/algorithm/ik/dls.yaml")
+    ee_cfg = _load("configs/device/end_effector/gripper.yaml")
     source = MockXRSource(hz=50.0, radius=0.15)
     mapper = DualArmMapper(scale=0.5, filter_alpha=1.0, map_head=True, grip_threshold=0.55)
     backend = MujocoDualURBackend(
         menagerie=ROOT / "third_party" / "mujoco_menagerie",
         scene_cfg=backend_cfg["scene"],
-        ik_cfg=backend_cfg["ik"],
+        ik_cfg=ik_cfg,
         ee_cfg=ee_cfg,
         render=False,
     )

@@ -7,7 +7,7 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 cd "$ROOT"
 
-CFG="$ROOT/configs/xrobo_setup.yaml"
+CFG="$ROOT/configs/setup/xrobo.yaml"
 if [[ ! -f "$CFG" ]]; then
   echo "缺少 $CFG"
   exit 1
@@ -140,6 +140,6 @@ uv run python -c "import xrobotoolkit_sdk as x; x.init(); print('xrobotoolkit_sd
 echo
 echo "安装完成。"
 echo "  · Python SDK : uv / .venv"
-echo "  · adb        : $SHIM_DIR/adb  （configs/xrobo_setup.yaml → adb.*）"
+echo "  · adb        : $SHIM_DIR/adb  （configs/setup/xrobo.yaml → adb.*）"
 echo "  · 一键仿真   : ./start_pico_sim.sh"
 echo "  · 或菜单     : ./start.sh →「一键：Pico 仿真遥操」"

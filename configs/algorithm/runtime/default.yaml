@@ -1,0 +1,13 @@
+# =============================================================================
+# 通用运行时（遥操控制环）
+# 采集节奏请改 configs/scene/cli.yaml → collect.pace_s，不要改这里
+# =============================================================================
+hz: 50.0                 # 控制频率
+duration_s: 8.0          # 单次运行时长（秒）；0 或很大=长时间
+scale: 1.0               # 人手→机器人位移缩放
+render: false
+log_enabled: false
+log_path: ""
+print_every: 25
+latency_window: 300
+interactive_confirm: true

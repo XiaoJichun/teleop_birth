@@ -1,0 +1,32 @@
+# =============================================================================
+# 映射：双臂手柄 → SparseTarget（相对遥操）
+# 姿态翻转/跟手怪：优先调 ori_mode / scale / max_step_*
+# =============================================================================
+type: dual_arm
+scale: 1.0
+filter_alpha: 0.92
+map_head: false
+
+clutch_mode: long_press_grip
+hold_s: 0.2
+grip_threshold: 0.45
+
+reset_buttons_left: ["y", "left_menu"]
+reset_buttons_right: ["b", "right_menu"]
+
+delta_frame: world
+xr_align: openxr_yup_to_zup
+
+# world_delta = 房间系相对旋转（TCP 朝下时不易拧反 yaw）
+# track = 体轴跟随手柄
+position_only: false
+ori_mode: world_delta
+max_step_m: 0.08
+max_step_rad: 0.45
+workspace_radius_m: 0.90
+workspace_center:
+  left_ee: [-0.45, 0.30, 0.50]
+  right_ee: [0.45, 0.30, 0.50]
+
+# Trigger^gamma；<1 中段更灵敏、闭合更快
+gripper_gamma: 0.55

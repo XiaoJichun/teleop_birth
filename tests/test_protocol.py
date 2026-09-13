@@ -6,11 +6,11 @@ import time
 
 import numpy as np
 
-from birth_teleop.backend import MockDualArmBackend
-from birth_teleop.control import RelativeClutch
-from birth_teleop.mapping import DualArmMapper, HumanoidMapper
-from birth_teleop.pipeline import TeleopLoop
-from birth_teleop.schema import (
+from teleop_birth.backend import MockDualArmBackend
+from teleop_birth.control import RelativeClutch, openxr_yup_to_mujoco_zup
+from teleop_birth.mapping import DualArmMapper, HumanoidMapper
+from teleop_birth.pipeline import TeleopLoop
+from teleop_birth.schema import (
     EXTREMITY_LEFT_EE,
     EXTREMITY_LEFT_FOOT,
     EXTREMITY_PELVIS,
@@ -18,8 +18,10 @@ from birth_teleop.schema import (
     ButtonState,
     XRObservation,
     identity_pose,
+    matrix_to_pose,
+    pose_to_matrix,
 )
-from birth_teleop.xr import KeyboardClutchMockXRSource, MockXRSource
+from teleop_birth.xr import KeyboardClutchMockXRSource, MockXRSource
 
 
 def _dual_mapper(**overrides):
@@ -59,6 +61,108 @@ def test_clutch_release_freezes():
     clutch.update("left", 1.0, xr, robot)
     eng, target = clutch.update("left", 0.0, xr, robot)
     assert eng is False and target is None
+
+
+def test_clutch_se3_tracks_orientation():
+    # identity align + track：手柄转到哪，末端相对接合偏移后跟着转
+    clutch = RelativeClutch(
+        grip_threshold=0.5,
+        mode="always",
+        position_only=False,
+        delta_frame="world",
+        xr_align=np.eye(3),
+        ori_mode="track",
+    )
+    xr0 = identity_pose()
+    robot0 = identity_pose()
+    robot0[0] = 0.5
+    clutch.update("left", 0.0, xr0, robot0, scale=1.0)
+    xr1 = identity_pose()
+    xr1[3:] = np.array([0.0, 0.0, np.sin(np.pi / 4), np.cos(np.pi / 4)])
+    eng, target = clutch.update("left", 0.0, xr1, robot0, scale=1.0)
+    assert eng and target is not None
+    np.testing.assert_allclose(target[3:], xr1[3:], atol=1e-5)
+
+
+def test_clutch_ori_track_keeps_engage_offset():
+    """接合时机器人已有姿态；手柄再转，末端 = 初始相对偏移 ∘ 对齐手柄。"""
+    clutch = RelativeClutch(
+        grip_threshold=0.5,
+        mode="always",
+        position_only=False,
+        delta_frame="world",
+        xr_align=np.eye(3),
+        ori_mode="track",
+    )
+    xr0 = identity_pose()
+    robot0 = identity_pose()
+    # robot 先绕 Z 转 90°
+    robot0[3:] = np.array([0.0, 0.0, np.sin(np.pi / 4), np.cos(np.pi / 4)])
+    clutch.update("left", 0.0, xr0, robot0, scale=1.0)
+    # 接合瞬间姿态应等于 robot0
+    eng, t0 = clutch.update("left", 0.0, xr0, robot0, scale=1.0)
+    assert eng and t0 is not None
+    np.testing.assert_allclose(t0[3:], robot0[3:], atol=1e-5)
+    # 手柄也绕 Z 转 90° → 末端应再转 90°（合计 180°）
+    xr1 = identity_pose()
+    xr1[3:] = np.array([0.0, 0.0, np.sin(np.pi / 4), np.cos(np.pi / 4)])
+    eng, t1 = clutch.update("left", 0.0, xr1, robot0, scale=1.0)
+    assert eng and t1 is not None
+    # 180° about Z: quat (0,0,1,0)
+    np.testing.assert_allclose(np.abs(t1[3:]), np.array([0.0, 0.0, 1.0, 0.0]), atol=1e-5)
+
+
+def test_clutch_world_axis_remap_forward():
+    """手柄在 OpenXR 沿 -Z（前）移动 → MuJoCo 应沿 +Y。"""
+    clutch = RelativeClutch(
+        grip_threshold=0.5,
+        mode="always",
+        position_only=True,
+        delta_frame="world",
+        xr_align=openxr_yup_to_mujoco_zup(),
+    )
+    xr0 = identity_pose()
+    robot0 = identity_pose()
+    robot0[:3] = [0.0, 0.4, 0.5]
+    clutch.update("left", 0.0, xr0, robot0, scale=1.0)
+    xr1 = identity_pose()
+    xr1[2] = -0.1  # XR forward
+    eng, target = clutch.update("left", 0.0, xr1, robot0, scale=1.0)
+    assert eng and target is not None
+    np.testing.assert_allclose(target[1], 0.5, atol=1e-6)  # +Y
+    np.testing.assert_allclose(target[2], 0.5, atol=1e-6)
+
+
+def test_clutch_world_delta_yaw_sign_with_z_down_tcp():
+    """TCP +Z 朝下时：手柄绕 XR 竖直轴转，world_delta 的世界 yaw 应同号（track 会反号）。"""
+    Ra = openxr_yup_to_mujoco_zup()
+    R_tcp = np.diag([1.0, -1.0, -1.0])  # approach = world -Z
+    robot0 = identity_pose()
+    T = np.eye(4, dtype=np.float64)
+    T[:3, :3] = R_tcp
+    T[:3, 3] = [0.0, 0.4, 0.5]
+    robot0[:] = matrix_to_pose(T)
+
+    xr0 = identity_pose()
+    xr1 = identity_pose()
+    # +90° about XR +Y (up) → after Ra conjugacy should be +90° about MJ +Z
+    xr1[3:] = np.array([0.0, np.sin(np.pi / 4), 0.0, np.cos(np.pi / 4)])
+
+    clutch = RelativeClutch(
+        grip_threshold=0.5,
+        mode="always",
+        position_only=False,
+        delta_frame="world",
+        xr_align=Ra,
+        ori_mode="world_delta",
+    )
+    clutch.update("left", 1.0, xr0, robot0, scale=1.0)
+    eng, target = clutch.update("left", 1.0, xr1, robot0, scale=1.0)
+    assert eng and target is not None
+    R_cmd = pose_to_matrix(target)[:3, :3]
+    R_delta_world = R_cmd @ R_tcp.T
+    yaw = float(np.arctan2(R_delta_world[1, 0], R_delta_world[0, 0]))
+    assert yaw > 1.0  # ~+π/2, not −π/2
 
 
 def test_clutch_long_press_requires_hold():

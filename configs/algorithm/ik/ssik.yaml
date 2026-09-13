@@ -1,0 +1,19 @@
+# =============================================================================
+# IK：SSIK 解析枚举（https://github.com/personalrobotics/ssik）
+# 安装: uv sync --extra ik ；切换: ik=ssik
+# =============================================================================
+solver: ssik
+fallback: dls
+position_only: false
+viewer_sync_every: 1
+# dls 回退时仍用这些
+iters: 20
+damping: 0.04
+pos_weight: 1.0
+rot_weight: 0.85
+max_dq: 0.28
+err_tol: 0.0008
+ssik:
+  arm: ur5e
+  max_solutions: 1
+  seed_metric: wrap_linf

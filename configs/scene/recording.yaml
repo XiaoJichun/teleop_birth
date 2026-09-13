@@ -1,0 +1,56 @@
+# =============================================================================
+# 采集录制配置：MCAP topic 名 + 多相机（第三人称 + 双腕）
+# 被 configs/scene/cli.yaml → collect.recording 引用
+# 修改相机机位 / Foxglove 话题名：只改本文件
+# =============================================================================
+
+# ----- Foxglove / MCAP 话题（可按项目规范改名）-----
+topics:
+  tf: /tf
+  log: /task/log
+  ee_left: /robot/ee/left
+  ee_right: /robot/ee/right
+  action_target: /action/target
+  # 物品位姿话题 = props_prefix + 物品名，例如 /props/red_cube
+  props_prefix: /props/
+  cameras:
+    third_person: /cam/third_person/compressed
+    wrist_left: /cam/wrist_left/compressed
+    wrist_right: /cam/wrist_right/compressed
+
+# ----- 相机公共参数 -----
+cameras:
+  enabled: true
+  width: 640
+  height: 480
+  # 每隔多少控制步抓一帧（越小越密，MCAP 越大）
+  every_n_steps: 2
+  jpeg_quality: 85
+
+  # 三个机位：第三人称 + 左腕 + 右腕
+  views:
+    # 第三人称：世界系固定机位（盯着桌面操作区）
+    - name: third_person
+      type: world
+      pos: [0.05, -0.55, 1.20]
+      lookat: [0.18, 0.40, 0.45]
+      fovy_deg: 55.0
+
+    # 左腕：挂在左臂 TCP site 上（随夹爪动）
+    - name: wrist_left
+      type: site
+      # 与 backend.scene 的 left_prefix + tcp_site_suffix 一致：L_ + g_pinch
+      site: L_g_pinch
+      # 相机在 site 坐标系下的位置（略退后、略偏上）
+      offset_xyz: [0.0, 0.04, -0.10]
+      # 看向 site 前方（夹爪工作方向）
+      lookat_xyz: [0.0, 0.0, 0.08]
+      fovy_deg: 70.0
+
+    # 右腕
+    - name: wrist_right
+      type: site
+      site: R_g_pinch
+      offset_xyz: [0.0, 0.04, -0.10]
+      lookat_xyz: [0.0, 0.0, 0.08]
+      fovy_deg: 70.0

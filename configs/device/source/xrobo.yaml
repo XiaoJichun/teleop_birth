@@ -1,0 +1,8 @@
+# =============================================================================
+# XR 源：Pico + XRoboToolkit PC Service
+# mock 无头测：source=mock
+# =============================================================================
+type: xrobo
+include_body: false
+# 详细安装/API 映射见 configs/setup/xrobo.yaml
+setup_config: "configs/setup/xrobo.yaml"

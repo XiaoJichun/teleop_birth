@@ -1,3 +1,0 @@
-# 后端：Unitree G1 占位（后续接 HuMiT / MOSAIC / xr_teleoperate）
-type: g1_stub
-mode: upper_body   # upper_body | whole_body

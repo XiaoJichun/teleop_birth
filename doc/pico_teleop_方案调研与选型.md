@@ -44,7 +44,7 @@
 
 一句话：**头显已就位 → 先把 XRobo 双臂闭环跑通；接口留适配层；人形再插 HuMiT/MOSAIC/xr_teleoperate，不要换底座。**
 
-> **工程落地**：本仓库已启动 `birth_teleop`（Progressive Extremity Teleop）——统一 `SparseTarget` 协议，双臂与人形共用底层。见 [架构与创新点_ProgressiveExtremityTeleop.md](./架构与创新点_ProgressiveExtremityTeleop.md) 与根目录 `README.md`。
+> **工程落地**：本仓库已启动 `teleop_birth`（Progressive Extremity Teleop）——统一 `SparseTarget` 协议，双臂与人形共用底层。见 [遥操作全链路详解.md](./遥操作全链路详解.md)（逐步算法与参考来源）、[架构与创新点_ProgressiveExtremityTeleop.md](./架构与创新点_ProgressiveExtremityTeleop.md) 与根目录 `README.md`。
 
 ---
 
