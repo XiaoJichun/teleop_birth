@@ -1,4 +1,10 @@
-# Pico / XRobo — 本地解压运行（无需 sudo）
+# =============================================================================
+# Pico / XRoboToolkit 安装与一键遥操参数
+# device/source/xrobo.yaml → setup_config 引用本文件；
+# 菜单「安装/检查 Pico·XRobo」与 install_xrobo.sh 读取 pc_service / adb / pybind。
+# =============================================================================
+
+# ----- PC Service（本地解压运行，无需 sudo）-----
 pc_service:
   deb_url: "https://github.com/XR-Robotics/XRoboToolkit-PC-Service/releases/download/v1.0.0/XRoboToolkit_PC_Service_1.0.0_ubuntu_22.04_amd64.deb"
   deb_filename: "XRoboToolkit_PC_Service_1.0.0_ubuntu_22.04_amd64.deb"
@@ -12,6 +18,7 @@ pc_service:
   system_install_dir: "/opt/apps/roboticsservice"
   system_run_script: "/opt/apps/roboticsservice/runService.sh"
 
+# ----- PICO 客户端 APK -----
 pico_apk:
   apk_url: "https://github.com/XR-Robotics/XRoboToolkit-Unity-Client/releases/download/v1.1.1/XRoboToolkit-PICO-1.1.1.apk"
   apk_filename: "XRoboToolkit-PICO-1.1.1.apk"
@@ -21,14 +28,18 @@ adb:
   platform_tools_url: "https://dl.google.com/android/repository/platform-tools-latest-linux.zip"
   zip_filename: "platform-tools-latest-linux.zip"
   install_dir: "third_party/platform-tools"   # 解压后含 adb 可执行文件
-  shim_dir: "tools/bin"                      # 项目内 PATH 入口
+  shim_dir: "scripts/bin"                      # 项目内 PATH 入口
 
+# ----- Pybind SDK（libPXREARobotSDK.so）-----
 pybind:
   repo_url: "https://github.com/XR-Robotics/XRoboToolkit-PC-Service-Pybind.git"
   local_dir: "third_party/XRoboToolkit-PC-Service-Pybind"
   venv_lib_subdir: "lib/xrobo"   # 相对 .venv，存放 libPXREARobotSDK.so
 
-# 一键 Pico 仿真遥操的 Hydra overrides
+# 轨迹图默认关，见 algorithm/runtime/default.yaml 的 plot.enabled
+# 一键打开可在 overrides 加: runtime.plot.enabled=true
+#
+# ----- 一键 Pico 仿真遥操的 Hydra overrides -----
 one_click_pico_sim:
   overrides:
     - "source=xrobo"
@@ -39,24 +50,22 @@ one_click_pico_sim:
     - "runtime.duration_s=0"
     - "runtime.log_enabled=true"
     - "runtime.interactive_confirm=false"
-    - "runtime.hz=150.0"
-    - "runtime.scale=1.0"
+    - "runtime.scale=2.0"
     - "runtime.print_every=50"
     - "mapper.clutch_mode=long_press_grip"
     - "mapper.hold_s=0.2"
     - "mapper.grip_threshold=0.45"
     - "mapper.position_only=false"
-    - "mapper.ori_mode=world_delta"
-    - "mapper.delta_frame=world"
     - "mapper.xr_align=openxr_yup_to_zup"
     - "mapper.filter_alpha=0.92"
-    - "mapper.max_step_m=0.08"
-    - "mapper.max_step_rad=0.45"
-    - "mapper.workspace_radius_m=0.90"
+    - "mapper.max_step_m=0.20"
+    - "mapper.max_step_rad=0.35"
+    - "mapper.workspace_radius_m=1.30"
     - "mapper.gripper_gamma=0.55"
     - "ik=dls"
     - "ik.position_only=false"
-    - "ik.rot_weight=0.85"
+    - "ik.rot_weight=0.30"
+    - "ik.ori_err_cap=0.25"
     - "ik.iters=20"
     - "ik.max_dq=0.28"
     - "ik.viewer_sync_every=1"
@@ -70,9 +79,10 @@ one_click_pico_sim:
 # 仅当 get_time_stamp_ns 长时间不更新才判定掉线；需要时可 enabled: true
 reconnect:
   enabled: false
-  stale_s: 5.0
-  cooldown_s: 8.0
+  stale_s: 5.0                 # 超过此秒数无新时间戳视为掉线
+  cooldown_s: 8.0              # 重连冷却 (s)
 
+# ----- XRobo Pybind API 方法名映射 -----
 api:
   init: "init"
   close: "close"
@@ -97,7 +107,8 @@ api:
   body_available: "is_body_data_available"
   body_poses: "get_body_joints_pose"
 
+# ----- 启动前检查项 -----
 preflight:
-  require_sdk_import: true
-  require_service_running: true
+  require_sdk_import: true     # 必须能 import xrobo pybind
+  require_service_running: true  # PC Service 进程需在跑
   hint_doc: "doc/Pico连接指南.md"

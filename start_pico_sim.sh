@@ -18,12 +18,12 @@ if [[ ! -x .venv/bin/python ]]; then
 fi
 
 # 仿真模型（menagerie）
-bash tools/scripts/bootstrap_third_party.sh
+bash scripts/bootstrap_third_party.sh
 
 # 若 SDK 未装，自动安装（无 sudo）
 if ! uv run python -c "import xrobotoolkit_sdk" 2>/dev/null; then
   echo "首次使用：自动安装 XRobo（本地解压，无需 sudo）..."
-  bash tools/scripts/install_xrobo.sh
+  bash scripts/xrobo/install_xrobo.sh
 fi
 
 # 导出动态库路径
@@ -35,7 +35,7 @@ SVC_DIR="$ROOT/$EXTRACT/$SVC_REL"
 export LD_LIBRARY_PATH="$ROOT/.venv/$VENV_SUB:$SVC_DIR:$SVC_DIR/lib:$SVC_DIR/SDK/x64:${LD_LIBRARY_PATH:-}"
 export LC_ALL="${LC_ALL:-C.UTF-8}"
 
-bash tools/scripts/ensure_xrobo_service.sh
+bash scripts/xrobo/ensure_xrobo_service.sh
 
 # 打印本机 IP，方便 Pico 选择
 echo

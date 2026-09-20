@@ -12,6 +12,7 @@ pos: [-0.10, 0.42, 0.43]
 place_radius_m: 0.055         # 判定「放到盘子里」的 XY 半径
 anchor: true
 labels:
+  zh: 蓝色盘子
   color: blue
   shape: plate
   role: container

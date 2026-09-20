@@ -1,0 +1,14 @@
+# 相机资产默认：RealSense D435 近似壳 + 内参。
+title: Intel RealSense D435 (approx)
+# 简化视觉几何（半尺寸 m）
+shell_size: [0.045, 0.013, 0.025]
+shell_rgba: [0.15, 0.15, 0.15, 1.0]
+# 针孔近似（像素）
+width: 640
+height: 480
+fovy_deg: 58.0
+intrinsics:
+  fx: 615.0
+  fy: 615.0
+  cx: 320.0
+  cy: 240.0

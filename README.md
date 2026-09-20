@@ -3,10 +3,11 @@
 Pico 4 Ultra Enterprise 遥操框架：**双臂先落地，同一协议扩到人形全身**。  
 环境用 **uv**，参数全部走 **YAML / Hydra**，入口为仿 `data_process` 的交互式终端。
 
-包路径：`src/teleop_birth/`。一键 Pico：世界系平移 + **`ori_mode=world_delta` 姿态** + 加速夹爪仿真。  
-仿真/真机统一双端口见 [doc/模块与接口.md](doc/模块与接口.md)。算法说明见 [doc/遥操作算法深入解析.md](doc/遥操作算法深入解析.md)。
+包路径：`src/teleop_birth/`，顶层四类：`teleop/`（闭环）、`robot/`（机型）、`scene/`（场景与插件）、`ui/`（菜单）。  
+**架构与算法总览**：[doc/架构与算法流程总览.md](doc/架构与算法流程总览.md)。
 
-场景物品 / 语义采集：`./start.sh` → **一键：自动化采数据**（读 `configs/scene/cli.yaml`）。详见 [tools/scripts/scene_ops/README.md](tools/scripts/scene_ops/README.md)。
+场景物品 / 语义采集：`./start.sh` → **场景工坊** 或快捷「自动化采数据」（读 `configs/scene/cli.yaml`）。  
+场景清单：[`configs/scenes/`](configs/scenes/)；插件：[`src/teleop_birth/scene/plugins/`](src/teleop_birth/scene/plugins/)。
 
 ## 依赖与 third_party
 
@@ -14,27 +15,32 @@ Pico 4 Ultra Enterprise 遥操框架：**双臂先落地，同一协议扩到人
 
 ```bash
 uv sync --all-groups
-bash tools/scripts/bootstrap_third_party.sh   # mujoco_menagerie
-bash tools/scripts/install_xrobo.sh           # XRobo/adb/APK（或 ./start_pico_sim.sh）
-# 可选解析 IK：
+bash scripts/bootstrap_third_party.sh   # mujoco_menagerie + tacto
+bash scripts/xrobo/install_xrobo.sh     # XRobo/adb/APK（或 ./start_pico_sim.sh）
+# 可选：
 uv sync --extra ik
+uv sync --extra tacto --extra collect
 ```
 
 ```bash
-./start_pico_sim.sh
+./start.sh   # 场景工坊 / Pico 遥操 / 自动采集
 # 或
-./start.sh   # 菜单：自定义遥操（设备 / 算法 / IK）
+./start_pico_sim.sh
 ```
 
-## 配置目录（算法 vs 设备）
+## 配置目录（算法 vs 设备 vs 场景插件）
 
 ```
 configs/
   config.yaml              # Hydra 入口
-  algorithm/               # 常驻算法（基本不改）：runtime / mapper / ik
-  device/                  # 换仿真或真机时改：source / backend / end_effector / paths
+  algorithm/               # runtime / mapper / ik
+  device/                  # source / backend / end_effector / paths
+  scenes/                  # 声明式场景清单（工坊）
+  plugins/                 # 插件默认
   setup/                   # Pico 安装与一键 overrides
-  ui/                      # 菜单 + 显示名
+  ui/                      # 菜单
+scripts/                   # bootstrap / xrobo（原 tools/ 已迁入）
+src/teleop_birth/          # 四类：ui / scene / robot / teleop
 ```
 
 换设备只动 **`configs/device/`**。根目录有指向上述目录的 symlink，因此命令行仍可用短写法 `source=xrobo`、`ik=ssik`。详见 [configs/README.md](configs/README.md)。

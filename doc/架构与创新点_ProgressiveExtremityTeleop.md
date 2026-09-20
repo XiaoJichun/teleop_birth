@@ -3,6 +3,7 @@
 > 项目代号：`teleop_birth`  
 > 硬件锚点：Pico 4 Ultra Enterprise + XRoboToolkit  
 > 目标：**双臂先出效果 → 同一底层扩到人形全身 → 可写论文且效果优先**  
+> **架构与算法流程总览（推荐先读）**：[架构与算法流程总览.md](./架构与算法流程总览.md)  
 > **算法/链路逐步说明**：[遥操作全链路详解.md](./遥操作全链路详解.md)  
 > **学习向深入解析（几何直觉、失败模式、例题）**：[遥操作算法深入解析.md](./遥操作算法深入解析.md)
 
@@ -34,11 +35,10 @@
 \[
 \Delta\mathbf{p}_{\mathrm{MJ}} = s\, R_a\,(\mathbf{p}_{\mathrm{XR}} - \mathbf{p}_{\mathrm{XR}}^{(0)})
 ,\quad
-R_t = R_{\mathrm{offset}}\, R_a\, R_{\mathrm{XR}}\, R_{\mathrm{ctrl}}\, R_a^{\top}
-\quad(\texttt{ori\_mode=track})
+R_t = R_{\mathrm{yaw}}\, R_{r0}\, \mathrm{Rot}(M\mathbf{w})
 \]
 
-详见全链路文档第 5 节与 [算法深入解析 §3.4](./遥操作算法深入解析.md)。
+详见全链路文档第 5 节与 [算法深入解析 §3](./遥操作算法深入解析.md)。
 
 ---
 
@@ -46,7 +46,7 @@ R_t = R_{\mathrm{offset}}\, R_a\, R_{\mathrm{XR}}\, R_{\mathrm{ctrl}}\, R_a^{\to
 
 1. **长按 Grip 才跟随（clutch）**：避免绝对姿态跳变飞车。  
 2. **相对位姿增量 + 世界系轴对齐**：按下锁定参考；OpenXR Y‑up 映射到 MuJoCo Z‑up。  
-3. **姿态 `ori_mode=world_delta`**：房间系相对旋转（默认）；可切 `track` / `position_only` 消融。  
+3. **腕部姿态**：房间竖直转左乘；拧腕/侧倾贴到夹爪体轴。`position_only` 只测平移。  
 4. **低通 + 限步 + 工作空间球**：稳、可调、可复现。  
 5. **夹爪仿真加速**：Trigger\(^\gamma\) + 2F‑85 力矩/步数调参。  
 6. **延迟可测**：`LatencyProbe`（loop / xr→cmd）。  
@@ -76,7 +76,7 @@ PET 主张：
    - 同一任务协议下对比：DLS‑IK 双臂 vs 稀疏全身策略  
 
 4. **跟手相对映射的工程完备性**（支撑演示与消融）  
-   - 世界系平移 + \(R_a\)；姿态 `world_delta` vs `track`；`position_only`；clutch / 单臂 home；夹爪 \(\gamma\)/力矩加速  
+   - 世界系平移 + \(R_a\)；腕部姿态；`position_only`；clutch / 单臂 home；夹爪 \(\gamma\)/力矩加速  
 
 5. **（可选深化）接口残差适配**  
    - 对齐 MOSAIC：通用跟踪 + 接口特定残差  
@@ -98,7 +98,7 @@ PET 主张：
 | 已具备 | 尚未具备 |
 |--------|----------|
 | Pico → 双 UR MuJoCo 相对遥操闭环 | 正式端到端延迟/任务成功率实验数字 |
-| 世界系平移 + track 姿态 + 长按 clutch | 真机 UR / G1 实机 Backend |
+| 世界系平移 + 腕部姿态 + 长按 clutch | 真机 UR / G1 实机 Backend |
 | 夹爪 Trigger 仿真加速跟手 | HuMiT/ExtremControl 策略接入 |
 | ~150 Hz、Hydra 一键复现 | |
 
@@ -108,22 +108,16 @@ PET 主张：
 
 ## 5. 仓库模块地图
 
+顶层只分四类（`src/teleop_birth/`）：
+
 ```
-src/teleop_birth/
-  schema/          # XRObservation, SparseTarget, ButtonState, SE(3) 工具
-  xr/              # MockSource, XRoboSource
-  mapping/         # DualArmMapper, HumanoidMapper
-  control/         # RelativeClutch, PoseLowPass, LatencyProbe, R_a
-  backend/         # MockDualArm, MujocoDualUR, G1Stub
-  sim/             # dual_ur5e_builder（menagerie）
-  ee/              # ParallelGripper, DexHandStub
-  pipeline/        # TeleopLoop
-  record/          # SessionRecorder
-  config/          # Hydra factory
-  cli/             # 交互终端
-configs/           # 全部可调参数
-doc/               # 本文件 + 全链路详解 + 选型调研 + Pico 指南
+ui/       # 菜单、场景工坊（menu.yaml → teleop_birth.ui.*）
+scene/    # 采集/物品 + plugins + assets
+robot/    # registry、sim/real 后端、ee、io、arm/wheeled/biped
+teleop/   # schema pipeline mapping control xr ik record config
 ```
+
+配置与脚本在仓库根：`configs/`、`scripts/robots/`。
 
 ---
 
@@ -153,8 +147,11 @@ doc/               # 本文件 + 全链路详解 + 选型调研 + Pico 指南
 
 | 文档 | 内容 |
 |------|------|
+| [架构与算法流程总览.md](./架构与算法流程总览.md) | **当前分层架构 + 遥操/映射/IK/采集全流程** |
 | [IK求解器切换.md](./IK求解器切换.md) | **DLS / SSIK / cuRobo** 配置切换与安装 |
 | [遥操作算法深入解析.md](./遥操作算法深入解析.md) | **学习向**：SE(3)、相对/世界系、\(R_a\)、clutch、滤波、DLS IK、例题自测 |
 | [遥操作全链路详解.md](./遥操作全链路详解.md) | 逐步流程、伪代码、参考仓库、创新效果表 |
+| [配置文件指南.md](./配置文件指南.md) | YAML / Hydra / 物流配置 |
+| [模块与接口.md](./模块与接口.md) | robot_io 仿真/真机双端口 |
 | [Pico连接指南.md](./Pico连接指南.md) | 装 APK、热点、WORKING/Send、休眠、调参 FAQ |
 | [pico_teleop_方案调研与选型.md](./pico_teleop_方案调研与选型.md) | 竞品对比与选型理由 |

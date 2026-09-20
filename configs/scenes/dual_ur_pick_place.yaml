@@ -1,0 +1,73 @@
+# =============================================================================
+# 插件场景清单：双 UR5e + Robotiq 桌面 pick/place
+# 由 SceneRegistry / 菜单「插件已部署场景」加载；遥操、采集、推理可引用本 id。
+# 道具：红方块 → 蓝盘子；换臂改 desktop_base.arm_id 与 backend。
+# =============================================================================
+id: dual_ur_pick_place
+type: dual_ur5e                # 场景类型标签（注册表用）
+title: 双UR 红方块→蓝盘子
+
+backend:
+  type: mujoco_dual_ur         # → configs/device/backend/mujoco_dual_ur.yaml
+
+grippers:
+  - id: robotiq_2f85
+    side: left
+  - id: robotiq_2f85
+    side: right
+
+# 相机：第三人称 D455；双腕 D405（CameraPlugin 自动补内参/外参）
+camera:
+  wrist_asset: realsense_d405
+  third_person_asset: realsense_d455
+  default_mount: wrist_camera_bracket
+
+cameras:
+  - name: third_person
+    type: world                # 世界系固定机位
+    role: third_person
+    camera_asset: realsense_d455
+    pos: [0.55, -0.75, 1.15]   # 相机位置 (m)
+    lookat: [0.15, 0.35, 0.45] # 注视点 (m)
+  - name: wrist_left
+    type: site                 # 挂在 MJCF site
+    role: wrist
+    camera_asset: realsense_d405
+    mount: wrist_camera_bracket
+    site: L_g_pinch            # 左臂 TCP site
+  - name: wrist_right
+    type: site
+    role: wrist
+    camera_asset: realsense_d405
+    mount: wrist_camera_bracket
+    site: R_g_pinch
+
+sensors: []                    # 无 TACTO/DIGIT 等额外传感器
+
+physics:
+  anti_penetration: false      # 本场景关闭防穿模（轻量物体）
+
+# 道具：红色小块 + 盘子（→ configs/scene/props/*.yaml）
+props:
+  - red_cube
+  - blue_plate
+
+collect:
+  policy: pick_place           # 采集策略插件名
+  task: right_pick_red_cube_to_blue_plate
+  arm: right                   # left | right
+
+teleop:
+  enabled: true                # 允许 Pico 遥操本场景
+
+# 坐标系插件：换臂只改 arm_profile；仿真/真机同一剖面
+frame:
+  arm_profile: mujoco_table_zup
+
+# 桌面 base：URDF 原点经 T_contact_urdf 落到桌面接触点（换臂只改 arm_id）
+# table_top_z 与 backend.scene 一致：base_height(0.42)+z_off(-0.02)+half(0.02)=0.42
+desktop_base:
+  arm_id: ur5e
+  table_top_z: 0.42            # 桌面顶面 Z (m)
+  xy: [0.0, 0.0]               # 臂 base 在桌面上的 XY (m)
+  yaw_rad: 0.0                 # 绕 Z 旋转 (rad)

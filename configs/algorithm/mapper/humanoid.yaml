@@ -1,25 +1,31 @@
+# =============================================================================
 # 映射：人形扩展（双臂基础上 + body/trackers）
+# Hydra mapper=humanoid 时加载；dual_arm 段与 configs/algorithm/mapper/dual_arm.yaml 同构。
+# body_joint_indices / tracker_* 供全身追踪与下肢占位扩展。
+# =============================================================================
 type: humanoid
+
+# ----- 双臂遥操段（与 dual_arm 相同语义）-----
 dual_arm:
-  scale: 1.5
-  filter_alpha: 0.95
-  map_head: false
-  clutch_mode: long_press_grip
-  hold_s: 0.2
-  grip_threshold: 0.45
+  scale: 1.5                # 手柄位移→TCP 位移比例
+  filter_alpha: 0.95        # 一阶低通；越大越跟手、越抖
+  map_head: false           # 是否映射头显姿态到机器人头
+  clutch_mode: long_press_grip   # long_press_grip | always | trigger
+  hold_s: 0.2               # 长按 grip 判定 clutch 的时长 (s)
+  grip_threshold: 0.45      # grip 轴阈值 [0,1]
   reset_buttons_left: ["y", "left_menu"]
   reset_buttons_right: ["b", "right_menu"]
-  delta_frame: world
-  xr_align: openxr_yup_to_zup
-  position_only: false
-  ori_mode: world_delta
-  max_step_m: 0.08
-  max_step_rad: 0.45
-  workspace_radius_m: 0.90
-  gripper_gamma: 0.55
-  workspace_center:
+  xr_align: openxr_yup_to_zup    # 或 arm_profile / xr_mapping
+  position_only: false      # true = 只跟位置、忽略姿态
+  max_step_m: 0.08          # 单步 TCP 平移上限 (m)
+  max_step_rad: 0.45        # 单步 TCP 旋转上限 (rad)
+  workspace_radius_m: 0.90  # 相对 workspace_center 的球形工作区半径 (m)
+  gripper_gamma: 0.55       # Trigger^gamma；<1 中段更灵敏
+  workspace_center:         # 各 EE 工作区球心 (m)，世界系
     left_ee: [-0.45, 0.30, 0.50]
     right_ee: [0.45, 0.30, 0.50]
+
+# ----- 人形 body 关节索引（占位，接真机时按 URDF 改）-----
 body_joint_indices:
   pelvis: 0
   left_ankle: 7
@@ -27,5 +33,7 @@ body_joint_indices:
   head: 15
   left_wrist: 22
   right_wrist: 23
+
+# ----- 外设 tracker 名称关键词（匹配 left/right）-----
 tracker_left_keywords: ["left", "_l", "-l"]
 tracker_right_keywords: ["right", "_r", "-r"]

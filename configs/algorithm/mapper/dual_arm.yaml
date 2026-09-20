@@ -1,6 +1,6 @@
 # =============================================================================
 # 映射：双臂手柄 → SparseTarget（相对遥操）
-# 姿态翻转/跟手怪：优先调 ori_mode / scale / max_step_*
+# 姿态跟手怪：优先调 controller_quat_xyzw / scale / max_step_*
 # =============================================================================
 type: dual_arm
 scale: 1.0
@@ -14,13 +14,23 @@ grip_threshold: 0.45
 reset_buttons_left: ["y", "left_menu"]
 reset_buttons_right: ["b", "right_menu"]
 
-delta_frame: world
 xr_align: openxr_yup_to_zup
+# 可选：臂坐标剖面（与 configs/plugins/frame/arm_profiles.yaml 对应；仿真/真机共用）
+# arm_profile: mujoco_table_zup
+# 可选：语义映射直接生成 R_a（优先于 xr_align 名）
+# xr_mapping:
+#   right: "+x"
+#   up: "+z"
+#   forward: "+y"
 
-# world_delta = 房间系相对旋转（TCP 朝下时不易拧反 yaw）
-# track = 体轴跟随手柄
+# 可选：握把→夹爪体轴 M（尖端朝下 tip_down / 尖端朝前 tip_forward）
+# grip_to_tcp: tip_down
+# grip_to_tcp_mapping:
+#   right: "+y"
+#   up: "+x"
+#   aim: "+z"
+
 position_only: false
-ori_mode: world_delta
 max_step_m: 0.08
 max_step_rad: 0.45
 workspace_radius_m: 0.90

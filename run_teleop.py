@@ -9,8 +9,8 @@ from pathlib import Path
 import hydra
 from omegaconf import DictConfig, OmegaConf
 
-from teleop_birth.cli import tui
-from teleop_birth.config.factory import build_teleop_loop
+from teleop_birth.ui import tui
+from teleop_birth.teleop.config.factory import build_teleop_loop
 
 
 def _project_root() -> Path:
@@ -26,8 +26,8 @@ def main(cfg: DictConfig) -> None:
     print(OmegaConf.to_yaml(cfg))
 
     if str(cfg.source.type).lower() == "xrobo":
-        from teleop_birth.xr.env import apply_xrobo_library_path
-        from teleop_birth.xr.sources import check_xrobo_sdk_available
+        from teleop_birth.teleop.xr.env import apply_xrobo_library_path
+        from teleop_birth.teleop.xr.sources import check_xrobo_sdk_available
 
         apply_xrobo_library_path(root)
         ok, msg = check_xrobo_sdk_available(root)
@@ -55,11 +55,20 @@ def main(cfg: DictConfig) -> None:
 
     duration = float(meta["duration_s"])
     duration_arg = None if duration <= 0 else duration
+    plot_cfg = cfg.runtime.get("plot") or {}
+    plot_on = bool(plot_cfg.get("enabled", False))
     print(
         f"启动遥操: hz={cfg.runtime.hz} duration={duration_arg} "
         f"source={cfg.source.type} backend={cfg.backend.type} "
-        f"mapper={cfg.mapper.type} ee={cfg.end_effector.type}"
+        f"mapper={cfg.mapper.type} ee={cfg.end_effector.type} "
+        f"plot={plot_on}"
     )
+    if plot_on:
+        try:
+            import matplotlib  # noqa: F401
+        except Exception as exc:
+            print(f"[plot] 已打开开关，但 matplotlib 导入失败，窗口不会出现: {exc}")
+            print("  修复: uv sync --extra plot")
     try:
         stats = loop.run(duration_s=duration_arg)
     except KeyboardInterrupt:

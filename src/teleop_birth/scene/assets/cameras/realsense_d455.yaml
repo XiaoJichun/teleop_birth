@@ -1,0 +1,16 @@
+# Intel RealSense D455（第三人称）近似壳 + 内参。
+# 参考公开规格的量级近似，用于仿真采集 / 标定占位；真机请用厂家标定覆盖。
+title: Intel RealSense D455 (third-person, approx)
+role: third_person
+shell_size: [0.062, 0.018, 0.028]
+shell_rgba: [0.12, 0.12, 0.14, 1.0]
+width: 640
+height: 480
+# D455 对角视场约 90°；竖向 fovy 近似
+fovy_deg: 58.0
+intrinsics:
+  fx: 390.0
+  fy: 390.0
+  cx: 320.0
+  cy: 240.0
+notes: "第三人称默认相机；基线更长，适合桌面俯视"

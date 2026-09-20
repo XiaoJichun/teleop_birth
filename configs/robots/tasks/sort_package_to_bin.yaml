@@ -1,0 +1,17 @@
+# =============================================================================
+# 语义任务：源箱包裹 → 目标箱（物流分拣）
+# 物流采集 policy 可读；objects 对应 artixon_logistics_scene.yaml 中 packages。
+# =============================================================================
+name: sort_package_to_bin
+instruction_zh: 将源箱中的包裹分拣放入目标箱
+instruction_en: Pick a package from the source bin and place it into the destination bin
+robot: artixon_arm_6a       # 目标机器人类型
+objects:
+  - pkg_0                   # 物流场景中的包裹名
+stages:
+  - action: pick
+    description: 从源箱抓取包裹
+  - action: place
+    description: 放入目标箱
+  - action: reset
+    description: 机械臂复位

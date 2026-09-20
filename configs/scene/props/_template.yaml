@@ -1,0 +1,18 @@
+# =============================================================================
+# 道具模板：复制本文件到同目录，改 name / labels / 几何后即可出现在模型库
+# =============================================================================
+name: my_object
+kind: box                      # box | plate | cylinder | sphere | bag
+rgba: [0.6, 0.6, 0.6, 1.0]
+size: [0.03, 0.03, 0.03]       # box=半尺寸；plate=[半径,半高]；cylinder=[半径,半高]
+mass: 0.05
+friction: [1.2, 0.005, 0.0001]
+freejoint: true
+pos: [0.10, 0.40, 0.45]
+labels:
+  zh: 我的物品
+  color: gray
+  shape: box
+  role: grasp
+anchor: false
+place_radius_m: null

@@ -8,6 +8,8 @@
 topics:
   tf: /tf
   log: /task/log
+  # 采集前标定结果（内参 K + 外参 T）整包 JSON
+  calibration: /camera/calibration
   ee_left: /robot/ee/left
   ee_right: /robot/ee/right
   action_target: /action/target
@@ -27,30 +29,37 @@ cameras:
   every_n_steps: 2
   jpeg_quality: 85
 
-  # 三个机位：第三人称 + 左腕 + 右腕
+  # 三个机位：第三人称 D455 + 双腕 D405（内参由 CameraPlugin / 资产补全）
   views:
-    # 第三人称：世界系固定机位（盯着桌面操作区）
+    # 第三人称：Intel RealSense D455，世界系固定机位
     - name: third_person
       type: world
+      role: third_person
+      camera_asset: realsense_d455
       pos: [0.05, -0.55, 1.20]
       lookat: [0.18, 0.40, 0.45]
-      fovy_deg: 55.0
+      fovy_deg: 58.0
+      intrinsics: {fx: 390.0, fy: 390.0, cx: 320.0, cy: 240.0}
 
-    # 左腕：挂在左臂 TCP site 上（随夹爪动）
+    # 左腕：Intel RealSense D405，挂在左臂 TCP site
     - name: wrist_left
       type: site
+      role: wrist
+      camera_asset: realsense_d405
       # 与 backend.scene 的 left_prefix + tcp_site_suffix 一致：L_ + g_pinch
       site: L_g_pinch
-      # 相机在 site 坐标系下的位置（略退后、略偏上）
       offset_xyz: [0.0, 0.04, -0.10]
-      # 看向 site 前方（夹爪工作方向）
       lookat_xyz: [0.0, 0.0, 0.08]
-      fovy_deg: 70.0
+      fovy_deg: 58.0
+      intrinsics: {fx: 430.0, fy: 430.0, cx: 320.0, cy: 240.0}
 
-    # 右腕
+    # 右腕 D405
     - name: wrist_right
       type: site
+      role: wrist
+      camera_asset: realsense_d405
       site: R_g_pinch
       offset_xyz: [0.0, 0.04, -0.10]
       lookat_xyz: [0.0, 0.0, 0.08]
-      fovy_deg: 70.0
+      fovy_deg: 58.0
+      intrinsics: {fx: 430.0, fy: 430.0, cx: 320.0, cy: 240.0}

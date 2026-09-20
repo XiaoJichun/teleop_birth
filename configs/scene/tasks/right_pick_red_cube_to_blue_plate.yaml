@@ -9,14 +9,14 @@ objects:
   - red_cube                 # → configs/scene/props/red_cube.yaml
   - blue_plate
 episodes: 5                 # 任务默认集数；cli.collect.episodes 可覆盖
-seed: 0
-success_xy_tol_m: 0.08
-success_z_tol_m: 0.10
+seed: 0                     # 布局随机种子
+success_xy_tol_m: 0.08      # 放置成功 XY 容差 (m)
+success_z_tol_m: 0.10       # 放置成功 Z 容差 (m)
 stages:
-  - action: pick
+  - action: pick            # pick | place | reset | ...
     description: 右臂夹取红色方块
     active_object: red_cube
-    arm: right
+    arm: right              # left | right
   - action: place
     description: 将方块放入蓝色盘子
     active_object: red_cube

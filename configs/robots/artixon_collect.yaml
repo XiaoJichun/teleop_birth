@@ -1,0 +1,25 @@
+# =============================================================================
+# 双臂物流数采（一字型平行双带）
+# 物流采集脚本 / 菜单读取；scene_file + recording 指向 robots/ 下 MJCF 与 MCAP 配置。
+# =============================================================================
+episodes: 2                          # 默认采集条数
+seed: 0                              # 布局随机种子
+package: pkg_0                       # 目标包裹名（见 artixon_logistics_scene.yaml）
+policy: pick_flip_place              # 采集策略：取→翻面→推
+render: true                         # 打开 MuJoCo 窗口
+pace_s: 0.015                        # 秒/控制步；0=尽快
+output_dir: logs/mcap/artixon        # MCAP 输出目录
+steps_per_segment: 42                # 段内笛卡尔插值步数
+sim_substeps: 5                      # 每控帧物理子步
+min_prop_separation_m: 0.10          # 道具最小间距 (m)
+scene_file: artixon_logistics_scene.yaml
+recording: artixon_recording.yaml
+
+# IK 覆盖（相对 algorithm/ik/dls.yaml 默认值）
+ik:
+  iters: 24
+  damping: 0.06
+  pos_weight: 1.0
+  rot_weight: 0.65
+  max_dq: 0.25
+  err_tol: 0.0015

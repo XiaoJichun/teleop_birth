@@ -1,0 +1,36 @@
+# =============================================================================
+# ROS 数据通讯插件：观测发布 + 动作订阅
+# 场景 YAML 可写 comms: { ... } 覆盖本文件；推理菜单也会询问关键项。
+# =============================================================================
+enabled: true
+transport: ros          # ros | mock（无 ROS2 时自动回退 mock，便于联调）
+
+# 发布观测
+publish:
+  cameras:
+    # 要发布的相机名（对应 scene.cameras[].name）；空列表 = 全部
+    names: []
+    topic_prefix: "/teleop_birth/cam"
+    encoding: rgb8      # sensor_msgs/Image
+  state:
+    # joint = sensor_msgs/JointState；ee = geometry_msgs/PoseStamped（左右）
+    mode: ee            # joint | ee
+    joint_topic: "/teleop_birth/robot/joint_states"
+    ee_left_topic: "/teleop_birth/robot/ee_left"
+    ee_right_topic: "/teleop_birth/robot/ee_right"
+    gripper_topic: "/teleop_birth/robot/grippers"   # std_msgs/Float64MultiArray [L,R]
+  rate_hz: 20.0
+
+# 订阅动作（驱动场景中的机器人）
+subscribe:
+  # joint = JointState → 写关节 ctrl；ee = PoseStamped → IK 伺服
+  mode: ee              # joint | ee
+  joint_topic: "/teleop_birth/robot/joint_cmd"
+  ee_left_topic: "/teleop_birth/robot/ee_cmd_left"
+  ee_right_topic: "/teleop_birth/robot/ee_cmd_right"
+  gripper_topic: "/teleop_birth/robot/gripper_cmd"  # Float64MultiArray [L,R]
+  # 无新动作时：hold=保持上次目标并继续仿真；idle=只步进物理
+  on_idle: hold
+
+node_name: teleop_birth_comms
+frame_id: world

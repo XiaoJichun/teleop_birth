@@ -21,7 +21,7 @@ cd /root/workspace/teleop_birth
 3. **长按该侧 Grip ≥ hold_s**（一键默认约 **0.2 s**）开始遥操（松开关闭；左右独立）  
 4. **回零**：左手 **Y** 或 **Menu**；右手 **B** 或 **Menu**（该侧手臂回 home）  
 5. **Trigger** = 夹爪（已仿真加速；扣扳机应较快开合）  
-6. **拧腕** = 末端姿态跟随（`ori_mode=world_delta`；松 Grip 保持）
+6. **拧腕** = 绕夹爪接近轴转；左右转跟房间竖直轴（松 Grip 保持）
 
 首次 PC 侧会自动：解压 PC Service → 装 adb → 编译 SDK（uv）→ 启动服务 → 开仿真。
 
@@ -59,20 +59,20 @@ cd /root/workspace/teleop_birth
 cd /root/workspace/teleop_birth
 
 # 若还没有 adb / APK，先跑安装脚本（会装 platform-tools 并下载 APK）
-bash tools/scripts/install_xrobo.sh
+bash scripts/xrobo/install_xrobo.sh
 
-tools/bin/adb devices
+scripts/bin/adb devices
 # 应能看到设备，例如：
 #   PA98xxxxxxxxxx    device
 
-tools/bin/adb install -r third_party/xrobo_downloads/XRoboToolkit-PICO-1.1.1.apk
+scripts/bin/adb install -r third_party/xrobo_downloads/XRoboToolkit-PICO-1.1.1.apk
 # 成功应显示 Success
 ```
 
 说明：
 
-- 系统若提示 `adb: command not found`，**不要**依赖系统 apt；用项目内 `tools/bin/adb`（由 `install_xrobo.sh` 安装）。
-- 若提示没有 APK 文件，先跑一次 `bash tools/scripts/install_xrobo.sh`，再执行上面的 `adb install`。
+- 系统若提示 `adb: command not found`，**不要**依赖系统 apt；用项目内 `scripts/bin/adb`（由 `install_xrobo.sh` 安装）。
+- 若提示没有 APK 文件，先跑一次 `bash scripts/xrobo/install_xrobo.sh`，再执行上面的 `adb install`。
 - 头显 USB 已连接时，`install_xrobo.sh` 也会尝试自动 `adb install`。
 
 ### 装好后在头显里找
@@ -81,7 +81,7 @@ tools/bin/adb install -r third_party/xrobo_downloads/XRoboToolkit-PICO-1.1.1.apk
 2. 找 **XRoboToolkit**（包名 `com.xrobotoolkit.client`）并打开  
 3. 选电脑 IP → WORKING → Send → 移动手柄  
 
-找不到图标时：确认允许显示未知来源应用；再执行一次 `tools/bin/adb install -r ...`；可用 `tools/bin/adb shell pm list packages | grep -i xrobo` 确认是否已安装。
+找不到图标时：确认允许显示未知来源应用；再执行一次 `scripts/bin/adb install -r ...`；可用 `scripts/bin/adb shell pm list packages | grep -i xrobo` 确认是否已安装。
 
 ---
 
@@ -117,14 +117,14 @@ tools/bin/adb install -r third_party/xrobo_downloads/XRoboToolkit-PICO-1.1.1.apk
 
 ```bash
 # 把 <PICO_IP> 换成头显在热点下的地址（不是 10.42.0.1）
-tools/bin/adb connect <PICO_IP>:5555
-tools/bin/adb devices
+scripts/bin/adb connect <PICO_IP>:5555
+scripts/bin/adb devices
 ```
 
 装 APK 示例：
 
 ```bash
-tools/bin/adb install -r third_party/xrobo_downloads/XRoboToolkit-PICO-1.1.1.apk
+scripts/bin/adb install -r third_party/xrobo_downloads/XRoboToolkit-PICO-1.1.1.apk
 ```
 
 说明：
@@ -146,7 +146,7 @@ tools/bin/adb install -r third_party/xrobo_downloads/XRoboToolkit-PICO-1.1.1.apk
 
 ### 方式 C：USB（首次装 APK 最稳）
 
-见上文「首次：安装 XRoboToolkit APK」：开发者模式 + USB + `tools/bin/adb install`。
+见上文「首次：安装 XRoboToolkit APK」：开发者模式 + USB + `scripts/bin/adb install`。
 
 ---
 
@@ -184,7 +184,7 @@ tools/bin/adb install -r third_party/xrobo_downloads/XRoboToolkit-PICO-1.1.1.apk
 
 ```bash
 cd /root/workspace/teleop_birth
-bash tools/scripts/pico_keep_awake.sh
+bash scripts/xrobo/pico_keep_awake.sh
 ```
 
 遥操时尽量 **插着 USB 充电**，XRoboToolkit 前台 + **Send 开**，少长时间摘下头显。
@@ -196,9 +196,9 @@ bash tools/scripts/pico_keep_awake.sh
 | 依赖 | 管理方式 |
 |------|----------|
 | Python / `xrobotoolkit_sdk` | **uv**（`.venv`） |
-| PC Service、adb、APK | **`tools/scripts/install_xrobo.sh`**（路径写在 `configs/setup/xrobo.yaml`） |
+| PC Service、adb、APK | **`scripts/xrobo/install_xrobo.sh`**（路径写在 `configs/setup/xrobo.yaml`） |
 
-adb **不能**进 uv，由安装脚本下载 Google `platform-tools` 到 `third_party/platform-tools/`，并在 `tools/bin/adb` 提供入口。
+adb **不能**进 uv，由安装脚本下载 Google `platform-tools` 到 `third_party/platform-tools/`，并在 `scripts/bin/adb` 提供入口。
 
 ---
 
@@ -209,14 +209,12 @@ adb **不能**进 uv，由安装脚本下载 Google `platform-tools` 到 `third_
 | `mapper.clutch_mode` | `long_press_grip` | 长按 Grip 才遥操；松开停止 |
 | `mapper.hold_s` | `0.2` | 长按判定时间（秒） |
 | `mapper.reset_buttons_*` | Y/Menu、B/Menu | 左右手柄各自回零 |
-| `mapper.delta_frame` | `world` | 相对增量叠在世界系（更跟手） |
 | `mapper.xr_align` | `openxr_yup_to_zup` | OpenXR→MuJoCo 轴对齐 |
-| `mapper.position_only` | `false` | 跟位置+姿态（`ori_mode=world_delta`） |
-| `mapper.ori_mode` | `world_delta` | 房间系相对旋转；TCP 朝下时 yaw 不反号 |
+| `mapper.position_only` | `false` | 跟位置+姿态；`true` 只跟平移 |
 | `mapper.gripper_gamma` | `0.55` | Trigger 曲线，越小中段越灵敏 |
-| `mapper.max_step_m` | `0.08` | 每周期最大位移 |
-| `runtime.scale` | `1.0` | 位移倍率（1:1） |
-| `runtime.hz` | `150` | 控制频率 |
+| `mapper.max_step_m` | `0.20` | 每周期最大位移 |
+| `runtime.scale` | `2.0` | 只放大位移，不放大旋转 |
+| `runtime.hz` | `150` | 控制频率（只在 `algorithm/runtime/default.yaml`）；与 Pico ~100 Hz 流是两套时钟，见 §3 |
 | `end_effector.force_scale` | `16` | 夹爪仿真力矩放大（加速闭合） |
 
 配置入口：`configs/setup/xrobo.yaml`、`configs/algorithm/mapper/dual_arm.yaml`。
@@ -228,7 +226,7 @@ adb **不能**进 uv，由安装脚本下载 Google `platform-tools` 到 `third_
 | 现象 | 处理 |
 |------|------|
 | `sudo: command not found` | 已本地解压 deb，无需 sudo；重跑 `./start_pico_sim.sh` |
-| `adb: command not found` | 跑 `bash tools/scripts/install_xrobo.sh`，使用 `tools/bin/adb` |
+| `adb: command not found` | 跑 `bash scripts/xrobo/install_xrobo.sh`，使用 `scripts/bin/adb` |
 | 应用列表没有 XRoboToolkit | 按上文「首次：安装 APK」用 USB + `adb install` |
 | 头显看不到 IP / 连不上 | 用「Pico 与电脑如何连接」方式 A 开热点；XRobo 选 `10.42.0.1` |
 | 无线 adb 连不上 | Pico 已连热点后用 `adb connect <PICO_IP>:5555`（不是 `10.42.0.1`）；或改用 USB |
@@ -237,9 +235,9 @@ adb **不能**进 uv，由安装脚本下载 Google `platform-tools` 到 `third_
 | 需要回零 | 左手 **Y/Menu**，右手 **B/Menu** |
 | Pico 容易掉线 | 关休眠；保持 Send；**手静止不会再误重连**。若仍断：检查热点信号，头显里 Reconnect |
 | 终端狂刷「重连 SDK」 | 已默认关闭误判重连；请更新代码后重跑 `./start_pico_sim.sh` |
-| 臂动了但方向不像手 | 确认已重启加载 `delta_frame=world`；先只测平移。前→桌深(+Y)、上→+Z、右→+X。某轴反了告诉我 |
-| 腕部乱拧 / 不像在跟手 | 确认 `ori_mode=world_delta`；可暂设 `position_only=true` 只测平移；仍怪可试 `ori_mode=track` 或调 `controller_quat_xyzw` |
+| 臂动了但方向不像手 | 先只测平移（`position_only=true`）。前→桌深(+Y)、上→+Z、右→+X。某轴反了改 `xr_align_matrix` |
+| 腕部乱拧 / 不像在跟手 | 左右转应绕房间竖直轴，拧螺丝应绕朝下的接近轴。只对不上握把朝向时可调 `controller_quat_xyzw`；先把平移测通可临时 `position_only=true` |
 | 夹爪开合慢 | 已放大 2F-85 `force_scale` + `extra_sim_steps`；重跑一键；还可把 `gripper_gamma` 降到 `0.45` |
-| 跟手不够远 | 把 `runtime.scale` 调到 `1.3~1.6` |
+| 跟手不够远 | 一键已是 `runtime.scale=2.0`；还不够再加大，只放大位移 |
 | 跟手慢/够不着 | 提高 `max_step_m`、`workspace_radius_m`；确认未顶工作空间球 |
 | 只想测仿真不要 Pico | `./start.sh` → 自定义 → `source=mock` |

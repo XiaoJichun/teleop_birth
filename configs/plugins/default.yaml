@@ -1,0 +1,50 @@
+# =============================================================================
+# 插件总开关与默认值
+# 由 PluginRegistry 在启动遥操/采集/推理时加载；场景 YAML 可局部覆盖同名键。
+# 坐标系细节见 plugins/frame/；ROS 通讯见 plugins/comms/ros_bridge.yaml
+# =============================================================================
+
+# ----- 物理辅助（防穿模、TCP 安全距）-----
+physics:
+  anti_penetration: true    # 启用后物体间最小分离约束
+  min_separation_m: 0.08    # 物体间最小间距 (m)
+  tcp_clearance_m: 0.06     # TCP 与障碍物/桌面额外净空 (m)
+
+# ----- TACTO 视觉触觉（需 uv sync --extra tacto）-----
+sensor:
+  tacto:
+    enabled: true           # 是否实例化 TactoSensorPlugin
+    show_window: true       # 弹出 DIGIT 渲染窗口
+    width: 120              # 触觉图像宽 (px)
+    height: 160             # 触觉图像高 (px)
+    every_n: 3              # 每 N 个控制步渲染一次（降负载）
+
+# ----- 相机资产默认（CameraPlugin 按 role 选 D405/D455）-----
+camera:
+  # 腕部默认 D405；第三人称默认 D455（CameraPlugin 按 role 自动选）
+  wrist_asset: realsense_d405
+  third_person_asset: realsense_d455
+  default_asset: realsense_d405       # 未指定 role 时的回退资产
+  default_mount: wrist_camera_bracket   # 腕部相机支架 MJCF 资产名
+
+# ----- 夹爪 menagerie 资产 -----
+gripper:
+  default: robotiq_2f85     # 默认平行夹爪模型 id
+
+# ----- 自动采集策略默认 -----
+collect:
+  default_policy: pick_place  # pick_place | pick_flip_place 等
+
+# ----- 坐标系插件（手柄→臂 / R_a / 桌面 base）-----
+frame:
+  arm_profile: mujoco_table_zup   # 见 plugins/frame/arm_profiles.yaml
+  # 或直接给语义映射生成 R_a：
+  # xr_mapping: {right: "+x", up: "+z", forward: "+y"}
+
+desktop_base:
+  # 场景清单里写 arm_id 即启用；也可在此给默认
+  # arm_id: ur5e
+
+# ----- ROS 数据通讯（推理场景）；细节见 configs/plugins/comms/ros_bridge.yaml -----
+comms:
+  enabled: true             # false 时不启动 RosBridgePlugin

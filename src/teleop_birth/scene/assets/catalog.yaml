@@ -1,0 +1,65 @@
+# 开源模型库索引（大文件在 third_party，本文件只做路径登记）
+version: 1
+sources:
+  menagerie:
+    root: third_party/mujoco_menagerie
+    bootstrap: scripts/bootstrap_third_party.sh
+  tacto:
+    root: third_party/tacto
+    bootstrap: scripts/bootstrap_third_party.sh
+  local_artixon:
+    root: src/teleop_birth/scene/assets/robots/arm/artixon_6a
+
+arms:
+  ur5e:
+    source: menagerie
+    key: universal_robots_ur5e/ur5e.xml
+    title: Universal Robots UR5e
+  artixon_arm_6a:
+    source: local_artixon
+    key: urdf/artixon_arm_6a_parallel_gripper.urdf
+    title: ArtiXon Arm-6A
+
+grippers:
+  robotiq_2f85:
+    source: menagerie
+    key: robotiq_2f85/2f85.xml
+    title: Robotiq 2F-85
+    attach_site: attachment_site
+    compatible_robots: [ur5e]
+  artixon_parallel:
+    source: local_artixon
+    key: urdf/artixon_arm_6a_parallel_gripper.urdf
+    title: ArtiXon Parallel Gripper (built-in)
+    builtin: true
+    compatible_robots: [artixon_arm_6a]
+
+cameras:
+  realsense_d405:
+    source: local
+    key: cameras/realsense_d405.yaml
+    title: Intel RealSense D405 (wrist, approx)
+    role: wrist
+  realsense_d455:
+    source: local
+    key: cameras/realsense_d455.yaml
+    title: Intel RealSense D455 (third-person, approx)
+    role: third_person
+  realsense_d435_approx:
+    source: local
+    key: cameras/realsense_d435.yaml
+    title: Intel RealSense D435 (approx shell + intrinsics)
+  third_person_free:
+    source: local
+    key: cameras/third_person.yaml
+    title: Free third-person camera
+
+mounts:
+  wrist_camera_bracket:
+    source: local
+    key: mounts/wrist_bracket.yaml
+    title: Wrist camera bracket (generic)
+  flange_to_2f85:
+    source: menagerie
+    key: robotiq_2f85/2f85.xml
+    title: UR flange → Robotiq (menagerie default)

@@ -1,0 +1,69 @@
+# =============================================================================
+# 物流双 Arm-6A Pico 遥操（菜单 / start_logistics_teleop.sh）
+# =============================================================================
+scene_file: artixon_logistics_scene.yaml
+render: true
+sim_substeps: 4
+# 控制环频率不写在这里，统一用 configs/algorithm/runtime/default.yaml 的 hz
+duration_s: 0          # 0 = 一直跑到 Ctrl+C
+print_every: 50
+scale: 1.0
+
+# 与主仓 Pico 一键遥操一致的 clutch / 姿态
+mapper:
+  map_head: false
+  clutch_mode: long_press_grip
+  hold_s: 0.2
+  grip_threshold: 0.45
+  position_only: false
+  xr_align: openxr_yup_to_zup
+  filter_alpha: 0.92
+  max_step_m: 0.06
+  max_step_rad: 0.40
+  workspace_radius_m: 0.75
+  gripper_gamma: 0.55
+  reset_buttons_left: ["y", "left_menu"]
+  reset_buttons_right: ["b", "right_menu"]
+  # 物流工位大致 TCP 工作区（相对桌面中心偏前）
+  workspace_center:
+    left_ee: [0.34, 0.12, 0.56]
+    right_ee: [0.34, -0.12, 0.56]
+
+ik:
+  position_only: false
+  rot_weight: 0.85
+  iters: 20
+  max_dq: 0.28
+  damping: 1.0e-3
+
+sticky:
+  attach_radius_m: 0.09
+  gripper_min: 0.25
+
+# TACTO DIGIT 视觉触觉（third_party/tacto，https://github.com/facebookresearch/tacto）
+# 依赖: bash scripts/bootstrap_third_party.sh && uv sync --extra tacto
+tacto:
+  enabled: true
+  show_window: true
+  width: 120
+  height: 160
+  every_n: 3
+
+# 轨迹图开关（默认关）。enabled: true 后弹出窗口：
+# 上行 Pico 原始手柄 xyz，下行即将送进 IK 的目标（未 clutch 时是 hold 位姿，点线）
+plot:
+  enabled: false
+  pico: true
+  pre_ik: true
+  post_ik: true
+  window: 600
+  refresh_hz: 12.0     # 只控制画图刷新，不是控制环
+  rate_window_s: 1.0   # 图上 recv 的滑动窗口；set 用统一的 runtime.hz
+  jump_warn_m: 0.08
+  save_png: false
+  save_dir: logs/plots
+
+source:
+  type: xrobo
+  include_body: false
+  setup_config: configs/setup/xrobo.yaml

@@ -8,8 +8,8 @@ import numpy as np
 import pytest
 from omegaconf import OmegaConf
 
-from teleop_birth.embodiment import MujocoDualURBackend
-from teleop_birth.schema import EXTREMITY_LEFT_EE, SparseTarget, identity_pose
+from teleop_birth.robot import MujocoDualURBackend
+from teleop_birth.teleop.schema import EXTREMITY_LEFT_EE, SparseTarget, identity_pose
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -83,7 +83,7 @@ def test_unknown_solver_raises():
 
 
 def test_robot_io_ports_on_adapter():
-    from teleop_birth.config.factory import build_backend
+    from teleop_birth.teleop.config.factory import build_backend
 
     scene = OmegaConf.load(ROOT / "configs/device/backend/mock_dual_arm.yaml")
     ee = OmegaConf.load(ROOT / "configs/device/end_effector/gripper.yaml")

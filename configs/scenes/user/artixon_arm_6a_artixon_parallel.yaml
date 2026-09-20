@@ -1,0 +1,92 @@
+# =============================================================================
+# 【用户/工坊输出】场景：ArtiXon Arm-6A 语义搭建
+# 由工坊「搭建场景」生成；build_mode=semantic 表示自然语言→道具。
+# 重要字段：props/prop_specs（内联几何）、backend、desktop_base、created_utc。
+# =============================================================================
+id: artixon_arm_6a_artixon_parallel
+type: logistics_x2arm
+title: ArtiXon Arm-6A（自变量） 场景
+build_mode: semantic           # semantic | manual — 搭建方式
+backend:
+  type: logistics_x2arm
+  robot_id: artixon_arm_6a
+mount:
+  kind: table
+  table_top_z: 0.42            # 安装面高度 (m)
+grippers:
+- id: artixon_parallel
+  side: right
+- id: artixon_parallel
+  side: left
+camera:
+  wrist_asset: realsense_d405
+  third_person_asset: realsense_d455
+  default_mount: wrist_camera_bracket
+cameras:
+- name: third_person
+  type: world
+  role: third_person
+  camera_asset: realsense_d455
+  pos:
+  - 0.55
+  - -0.75
+  - 1.15
+  lookat:
+  - 0.15
+  - 0.35
+  - 0.45
+- name: wrist_right
+  type: site
+  role: wrist
+  camera_asset: realsense_d405
+  mount: wrist_camera_bracket
+  site: R_g_pinch
+props:
+- sem_0_9655                    # → configs/scene/props/user/sem_0_9655.yaml
+prop_specs:
+- name: sem_0_9655
+  kind: box
+  rgba:
+  - 0.75
+  - 0.55
+  - 0.25
+  - 1.0
+  size:
+  - 0.025
+  - 0.025
+  - 0.025                     # 半尺寸 (m)
+  mass: 0.05                   # 质量 (kg)
+  friction:
+  - 1.0
+  - 0.005
+  - 0.0001
+  freejoint: true              # 可自由移动
+  pos:
+  - 0.1
+  - 0.35
+  - 0.46                      # 初始位姿 (m)
+  quat_wxyz:
+  - 1
+  - 0
+  - 0
+  - 0
+  labels:
+    zh: 快递袋子
+    source: semantic           # 语义生成标记
+frame:
+  arm_profile: mujoco_table_zup
+desktop_base:
+  arm_id: artixon_6a
+  table_top_z: 0.42
+  xy:
+  - 0.0
+  - 0.0
+  yaw_rad: 0.0
+teleop:
+  enabled: true
+collect:
+  policy: pick_place
+  task: right_pick_red_cube_to_blue_plate
+  arm: right
+notes: ''
+created_utc: '2026-09-19T09:21:56Z'   # 工坊创建时间

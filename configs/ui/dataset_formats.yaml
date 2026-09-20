@@ -1,0 +1,22 @@
+# =============================================================================
+# 采集落盘格式（Pico 遥操 / 自动采集会话可选）
+# 菜单采集流程读取 formats.<id>；status: ready 表示可直接选用。
+# experimental 格式会先写 MCAP 再导出侧车目录/HDF5。
+# =============================================================================
+formats:
+  mcap:
+    title: MCAP（Foxglove）
+    extension: .mcap              # 文件后缀
+    status: ready                 # ready | experimental
+  hdf5:
+    title: HDF5（含 MCAP 字节 + meta）
+    extension: .hdf5
+    status: ready
+  lerobot_v2_1:
+    title: LeRobot v2.1（目录 + meta + 原始 MCAP）
+    extension: .lerobot           # 实际为目录名后缀习惯
+    status: ready
+  lerobot_v3_0:
+    title: LeRobot v3.0（目录 + meta + 原始 MCAP）
+    extension: .lerobot
+    status: ready

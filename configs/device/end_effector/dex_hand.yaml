@@ -1,7 +1,11 @@
-# 末端：灵巧手占位（标量 openness → 均匀屈指，直至接上 dex-retargeting）
+# =============================================================================
+# 末端：灵巧手占位（标量 openness → 均匀屈指）
+# Hydra end_effector=dex_hand；直至接上 dex-retargeting 前用 2F-85 作代理驱动。
+# =============================================================================
 type: dex_hand
-n_fingers: 5
-proxy_use_gripper_actuator: true
+n_fingers: 5                   # 逻辑手指数（占位）
+proxy_use_gripper_actuator: true   # true = 用平行夹爪 actuator 作开合代理
+
 # 代理驱动 2F-85 时的开合行程（与 gripper.yaml 对齐）
-ctrl_open: 0.0
-ctrl_closed: 255.0
+ctrl_open: 0.0                 # 完全张开时的 ctrl 值
+ctrl_closed: 255.0             # 完全闭合时的 ctrl 值

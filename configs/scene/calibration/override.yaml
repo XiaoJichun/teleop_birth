@@ -1,0 +1,22 @@
+# =============================================================================
+# 可选：覆盖相机内参/外参（真机标定或厂家 dump）
+# scene/cli.yaml → collect.calibration_override 引用；不存在或 cameras 为空时用 D405/D455 近似。
+# 采集标定会话会合并本文件并写入 session/calibration.json + MCAP /camera/calibration。
+# =============================================================================
+#
+# 用法：
+#   1. 按机位名填写（与 recording.yaml / 场景 cameras[].name 一致）
+#   2. 再跑自动采集；标定会话会合并本文件并写入 session/calibration.json + MCAP
+#
+# cameras:
+#   third_person:
+#     intrinsics: {fx: 390.0, fy: 390.0, cx: 320.0, cy: 240.0}
+#     extrinsics:
+#       T: [[1,0,0,0.05],[0,1,0,-0.55],[0,0,1,1.20],[0,0,0,1]]
+#   wrist_right:
+#     intrinsics: {fx: 430.0, fy: 430.0, cx: 320.0, cy: 240.0}
+#     # 相对 TCP site 的外参
+#     extrinsics:
+#       T: [[1,0,0,-0.06],[0,1,0,0],[0,0,1,0.05],[0,0,0,1]]
+
+cameras: {}                    # 空 = 不覆盖，使用资产默认内参/外参

@@ -1,22 +1,25 @@
 # =============================================================================
 # IK：cuRobo GPU（https://curobo.org/）
-# 未安装 CUDA 版时 fallback→dls；切换: ik=curobo
+# Hydra ik=curobo；安装按官网 CUDA 文档；未装则 fallback→dls。
 # =============================================================================
 solver: curobo
 fallback: dls
 position_only: false
 viewer_sync_every: 1
+
+# dls 回退参数
 iters: 20
 damping: 0.04
 pos_weight: 1.0
 rot_weight: 0.85
 max_dq: 0.28
 err_tol: 0.0008
+
 curobo:
-  robot_yml: ur5e.yml
-  num_seeds: 20
-  position_threshold: 0.005
-  rotation_threshold: 0.05
+  robot_yml: ur5e.yml          # cuRobo 机器人描述文件
+  num_seeds: 20                # 并行随机种子数
+  position_threshold: 0.005    # 位置收敛阈值 (m)
+  rotation_threshold: 0.05   # 姿态收敛阈值 (rad)
   self_collision_check: false
   self_collision_opt: false
-  use_cuda_graph: true
+  use_cuda_graph: true         # CUDA graph 加速（需 GPU）

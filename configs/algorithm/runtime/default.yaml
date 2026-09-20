@@ -1,13 +1,32 @@
 # =============================================================================
-# 通用运行时（遥操控制环）
-# 采集节奏请改 configs/scene/cli.yaml → collect.pace_s，不要改这里
+# 通用运行时参数（Hydra runtime 组）
+# 遥操主入口 configs/config.yaml → defaults 引用本文件。
+# 控制环频率 hz 只在这里改；场景/机型 YAML 不要再写一份。
 # =============================================================================
-hz: 50.0                 # 控制频率
-duration_s: 8.0          # 单次运行时长（秒）；0 或很大=长时间
-scale: 1.0               # 人手→机器人位移缩放
-render: false
-log_enabled: false
-log_path: ""
-print_every: 25
-latency_window: 300
-interactive_confirm: true
+
+hz: 150.0                   # 主控制环频率 (Hz)；双 UR、物流臂、Pico 遥操共用
+duration_s: 8.0             # 运行时长 (s)；0 = 直到 Ctrl+C 或关窗口
+scale: 1.0                  # 时间缩放；>1 加速仿真节拍
+render: false               # 遥操默认是否打开 MuJoCo 窗口
+log_enabled: false          # 是否写运行日志
+log_path: ""                # 日志路径；空 = 默认 logs/
+print_every: 25             # 每隔 N 个控制步打印一次状态
+latency_window: 300         # 延迟统计滑动窗口长度（步数）
+interactive_confirm: true   # 启动前是否在终端确认参数
+
+# ----- 轨迹图开关（默认关，不影响控制环）-----
+# 打开：enabled: true，或 Hydra override runtime.plot.enabled=true
+# 三个窗口：PICO raw（刚收到）/ PRE-IK（求解前目标）/ POST-IK（求解后 TCP）
+# 结束时写入 save_dir/<时间戳>/{pico,pre_ik,post_ik}.png
+# 图上的 set Hz 直接用本文件 hz，不要再写一份。一键 Pico 会覆盖 hz，见 setup/xrobo.yaml
+plot:
+  enabled: true
+  pico: true                # 绘制原始 XR 手柄位姿
+  pre_ik: true              # 绘制 IK 输入目标
+  post_ik: true             # 绘制 IK 输出 TCP
+  window: 600               # 滚动点数
+  refresh_hz: 12.0          # 只控制画图刷新，不是控制环
+  rate_window_s: 1.0        # 实测接收频率的滑动窗口（秒）
+  jump_warn_m: 0.08         # 0 = 不打印跳变警告；>0 时位置跳变阈值 (m)
+  save_png: false           # true 时运行中每秒另存一份；结束时总会保存
+  save_dir: logs/plots      # PNG 输出根目录

@@ -1,11 +1,12 @@
 # =============================================================================
 # IK：SSIK 解析枚举（https://github.com/personalrobotics/ssik）
-# 安装: uv sync --extra ik ；切换: ik=ssik
+# Hydra ik=ssik；安装: uv sync --extra ik；失败时 fallback→dls。
 # =============================================================================
 solver: ssik
 fallback: dls
 position_only: false
 viewer_sync_every: 1
+
 # dls 回退时仍用这些
 iters: 20
 damping: 0.04
@@ -13,7 +14,8 @@ pos_weight: 1.0
 rot_weight: 0.85
 max_dq: 0.28
 err_tol: 0.0008
+
 ssik:
-  arm: ur5e
-  max_solutions: 1
-  seed_metric: wrap_linf
+  arm: ur5e                    # 支持的臂型枚举名
+  max_solutions: 1             # 最多保留几个解析解
+  seed_metric: wrap_linf       # 选解度量：wrap_linf | ...

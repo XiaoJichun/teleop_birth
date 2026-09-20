@@ -9,12 +9,12 @@ import numpy as np
 import pytest
 from omegaconf import OmegaConf
 
-from teleop_birth.scene_ops.placement.pose_controller import PropPoseController
-from teleop_birth.scene_ops.placement.randomizer import LayoutRandomizer
-from teleop_birth.scene_ops.props.catalog import PropCatalog
-from teleop_birth.scene_ops.recording.mcap_writer import McapEpisodeWriter
-from teleop_birth.scene_ops.tasks.pick_place import SemanticPickPlaceTask
-from teleop_birth.sim.dual_ur5e_builder import build_dual_ur5e_2f85
+from teleop_birth.scene.placement.pose_controller import PropPoseController
+from teleop_birth.scene.placement.randomizer import LayoutRandomizer
+from teleop_birth.scene.props.catalog import PropCatalog
+from teleop_birth.scene.recording.mcap_writer import McapEpisodeWriter
+from teleop_birth.scene.tasks.pick_place import SemanticPickPlaceTask
+from teleop_birth.robot.arm.ur5e.builder import build_dual_ur5e_2f85
 
 ROOT = Path(__file__).resolve().parents[1]
 

@@ -1,0 +1,34 @@
+# =============================================================================
+# 【用户/工坊输出】道具：语义生成的「快递袋子」
+# 由工坊语义搭建写入 configs/scene/props/user/；场景 YAML 的 props 引用 name。
+# 重要字段：kind/size/mass/friction/pos/labels.source=semantic。
+# =============================================================================
+name: sem_0_9655                 # 全局唯一道具 id
+kind: box                        # box | plate | cylinder | sphere
+rgba:
+- 0.75
+- 0.55
+- 0.25
+- 1.0                           # RGBA [0,1]
+size:
+- 0.025
+- 0.025
+- 0.025                         # box 半尺寸 (m)
+mass: 0.05                       # 质量 (kg)
+friction:
+- 1.0
+- 0.005
+- 0.0001                        # 滑动/扭转/滚动摩擦
+freejoint: true                  # 启用 6-DOF 自由关节
+pos:
+- 0.1
+- 0.35
+- 0.46                          # 默认位置 (m)，布局时可被覆盖
+quat_wxyz:
+- 1
+- 0
+- 0
+- 0                             # 姿态四元数 [w,x,y,z]
+labels:
+  zh: 快递袋子
+  source: semantic               # 标记为语义生成（非手改 props 库）

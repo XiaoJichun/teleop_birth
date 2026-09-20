@@ -1,14 +1,16 @@
 # =============================================================================
-# IK：阻尼最小二乘 DLS（默认，无 GPU 依赖）
-# 切换求解器：Hydra override ik=ssik | ik=curobo，或改 config.yaml defaults
+# IK：阻尼最小二乘 DLS（默认，无额外依赖）
+# Hydra ik=dls 时加载；backend 每控帧调用求解器追 SparseTarget。
 # =============================================================================
 solver: dls
-fallback: dls
-iters: 20              # 每控制步迭代次数
-damping: 0.04          # 阻尼；过大跟手钝，过小易抖
-pos_weight: 1.0
-rot_weight: 0.85
-max_dq: 0.28           # 单步关节增量上限 (rad)
-err_tol: 0.0008
-position_only: false   # 采集脚本会强制 true（只跟位置）
-viewer_sync_every: 1   # 可视化同步频率（每 N 步）
+fallback: dls                  # 主求解失败时的回退（本文件即 dls）
+iters: 20                      # 每控帧最大迭代次数
+damping: 0.04                  # 阻尼系数 λ（越大越稳、越慢）
+pos_weight: 1.0                # 位置误差权重
+rot_weight: 0.35               # 姿态误差权重
+# 单步姿态误差上限（弧度）。过大时关节步长全给转腕，TCP 平移跟不上。
+ori_err_cap: 0.25
+max_dq: 0.28                   # 单关节单步增量上限 (rad)
+err_tol: 0.0008                # 收敛阈值（位置+姿态综合）
+position_only: false           # true = 只求位置 IK
+viewer_sync_every: 1           # 每 N 控帧同步 MuJoCo viewer

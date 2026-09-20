@@ -1,7 +1,8 @@
 # =============================================================================
-# 路径：menagerie 资产与日志目录（相对项目根）
+# 通用路径（Hydra paths 组）
+# 相对路径均相对项目根；backend / 采集 / 工坊会读取这些键。
 # =============================================================================
-project_root: "."
-menagerie: "third_party/mujoco_menagerie"
-logs_dir: "logs"
-configs_dir: "configs"
+project_root: "."                           # 仓库根目录
+menagerie: "third_party/mujoco_menagerie"   # MuJoCo menagerie 资产根
+logs_dir: "logs"                            # 日志、MCAP、轨迹图默认目录
+configs_dir: "configs"                      # 配置根（场景相对路径以此为基准）

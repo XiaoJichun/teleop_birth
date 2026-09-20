@@ -1,0 +1,9 @@
+# 第三人称自由相机。
+title: Third-person free camera
+shell_size: [0.02, 0.02, 0.02]
+shell_rgba: [0.2, 0.2, 0.6, 0.5]
+width: 640
+height: 480
+fovy_deg: 55.0
+default_pos: [1.1, 0.0, 1.0]
+default_xyaxes: [-1, 0, 0, 0, 0, 1]

@@ -1,0 +1,36 @@
+# =============================================================================
+# 物流 Arm-6A 采集录制（MCAP topic + 相机）
+# robots/artixon_collect.yaml → recording 引用；与 scene/recording.yaml 结构类似，
+# 但话题名与机位针对物流单腕场景（R_tcp_pinch）。
+# =============================================================================
+
+# ----- Foxglove / MCAP 话题 -----
+topics:
+  tf: /tf
+  log: /task/log
+  ee: /robot/ee/right          # 右臂 EE 位姿
+  action_target: /robot/ee/left  # 动作目标（对侧臂或占位）
+  props_prefix: /props/        # 物品位姿 = 前缀 + 物品名
+  cameras:
+    third_person: /cam/third_person/compressed
+    wrist: /cam/wrist_right/compressed
+
+# ----- 相机参数 -----
+cameras:
+  enabled: true
+  width: 640                   # 图像宽 (px)
+  height: 480                  # 图像高 (px)
+  every_n_steps: 2             # 每 N 控帧抓一帧
+  jpeg_quality: 85             # JPEG 质量 [1,100]
+  views:
+    - name: third_person
+      type: world
+      pos: [0.55, -0.85, 1.25]
+      lookat: [0.45, 0.0, 0.50]
+      fovy_deg: 55.0           # 垂直视场角 (deg)
+    - name: wrist
+      type: site
+      site: R_tcp_pinch        # 物流 MJCF 右腕 TCP
+      offset_xyz: [-0.06, 0.0, 0.05]   # 相对 site 的相机偏移 (m)
+      lookat_xyz: [0.10, 0.0, 0.0]
+      fovy_deg: 70.0

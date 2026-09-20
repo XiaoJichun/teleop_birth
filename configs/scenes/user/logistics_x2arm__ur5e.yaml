@@ -1,0 +1,63 @@
+# =============================================================================
+# 【用户/工坊输出】场景：物流分拣换臂 → UR5e
+# 由菜单「场景更换机器人」自动生成，写入 configs/scenes/user/。
+# 重要字段：id/type/backend/desktop_base/frame；swapped_utc/swap_note 记录换臂历史。
+# =============================================================================
+id: logistics_x2arm__ur5e
+type: dual_ur5e                # 换臂后类型变为 dual_ur5e
+title: 物流分拣 ArtiXon Arm-6A｜换臂→ur5e
+backend:
+  type: mujoco_dual_ur
+  robot_id: ur5e
+grippers:
+- id: robotiq_2f85
+  side: left
+- id: robotiq_2f85
+  side: right
+cameras:
+- name: third_person
+  type: world
+  role: third_person
+  camera_asset: realsense_d455
+  pos:
+  - 1.0
+  - 0.0
+  - 1.1
+  lookat:
+  - 0.38
+  - 0.0
+  - 0.45
+- name: wrist_right
+  type: site
+  role: wrist
+  camera_asset: realsense_d405
+  mount: wrist_camera_bracket
+  site: R_g_pinch
+sensors: []
+physics:
+  anti_penetration: false
+collect:
+  policy: pick_flip_place
+  arm: right
+teleop:
+  enabled: true
+camera:
+  wrist_asset: realsense_d405
+  third_person_asset: realsense_d455
+  default_mount: wrist_camera_bracket
+desktop_base:
+  arm_id: ur5e                 # 桌面 base 插件臂型
+  table_top_z: 0.42            # 桌面顶 Z (m)
+  xy:
+  - 0.0
+  - 0.0
+  yaw_rad: 0.0
+mount:
+  kind: table                  # table | floor 等安装方式
+  table_top_z: 0.42
+frame:
+  arm_profile: mujoco_table_zup
+swapped_utc: '2026-09-19T13:48:18Z'   # 换臂时间戳（ISO8601）
+swap_note: 'desktop contact fixed: table_top_z=0.42, xy=[0.0, 0.0], yaw=0.0; arm_id
+  artixon_6a→ur5e'
+props: []                      # 换臂后道具列表（可后续在工坊添加）

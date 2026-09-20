@@ -1,0 +1,30 @@
+# =============================================================================
+# 手柄 → 机械臂房间系：臂坐标剖面（仿真 / 真机共用同一 R_a）
+# mapper.arm_profile 或 scene.frame.arm_profile 引用 profiles.<name>。
+# 换臂：改 profile 名或复制新增；真机衔接同一 profile + RobotEndpoint。
+# =============================================================================
+
+profiles:
+  mujoco_table_zup:
+    title: "MuJoCo 桌面 Z-up（+Y 朝桌深）"
+    xr_right: "+x"              # OpenXR 右轴 → 臂系
+    xr_up: "+z"
+    xr_forward: "+y"
+    sim_backends: [mujoco_dual_ur, logistics_x2arm, mock_dual_arm]
+    real_backends: [ur_realtime, artixon_realtime]
+    notes: "默认 OpenXR→MuJoCo；与历史 openxr_yup_to_zup 等价"
+
+  openxr_yup_to_zup:
+    title: "兼容别名：openxr_yup_to_zup"
+    xr_right: "+x"
+    xr_up: "+z"
+    xr_forward: "+y"
+
+  # 示例：若某真机房间系 +X 朝前、+Z 向上（少见），可复制改轴
+  # custom_arm_example:
+  #   title: "自定义示例"
+  #   xr_right: "+y"
+  #   xr_up: "+z"
+  #   xr_forward: "+x"
+  #   sim_backends: [mujoco_dual_ur]
+  #   real_backends: [ur_realtime]

@@ -1,6 +1,6 @@
 # =============================================================================
 # 场景 CLI 默认（生成物品 / 摆放 / 语义采集）
-# 交互菜单与 tools/scripts/scene_ops/*.py 共用；改默认行为优先改本文件。
+# 交互菜单与 configs/scenes/ + workshop *.py 共用；改默认行为优先改本文件。
 # =============================================================================
 
 # ----- 生成道具（写入 MJCF / 预览）-----
@@ -17,25 +17,33 @@ place:
     - red_cube
     - blue_plate
   seed: 0             # 布局随机种子
-  repeats: 3          # 连续摆放次数
+  repeats: 120          # 连续摆放次数
   render: false
 
 # ----- 语义自动化采集 → MCAP -----
 collect:
   # 任务定义：configs/scene/tasks/<task>.yaml
   task: right_pick_red_cube_to_blue_plate
-  episodes: 3
+  episodes: 3               # 默认条数；快捷/自定义采集启动前仍会询问
   seed: 0
   arm: right                # left | right
   render: true              # 打开 MuJoCo 窗口盯着看
   pace_s: 0.02              # 秒/控制步；0=尽快；观摩建议 0.01~0.03
-  output_dir: logs/mcap
+  output_dir: logs/mcap     # 默认输出目录；任何采集启动前都会再询问确认
   steps_per_segment: 40     # 每段笛卡尔插值步数（越大越平滑、越慢）
   hold_steps: 0             # 段末停顿步数；0=流畅不停顿
-  sticky_grasp: true        # 粘性抓取（对齐夹爪内 + 关闭碰撞，避免穿模）
+  sticky_grasp: true        # 开=双指垫接触后锁定（采集稳定）；关=纯摩擦（仿真里很难抬起）
 
-  # 相机机位 / Foxglove topic：见 recording 文件（第三人称 + 双腕）
+  # 采集前先做相机内参/外参标定，再写 MCAP（含 calibration 字段 + /camera/calibration）
+  calibrate_before_collect: true
+  # 可选覆盖厂家/实测标定（不存在则用 D405/D455 资产近似）
+  calibration_override: scene/calibration/override.yaml
+  # 若已有完整 JSON，可直接填路径（相对项目根或绝对路径），跳过解析
+  calibration_file: ""
+
+  # 相机机位 / Foxglove topic：见 recording 文件（第三人称 D455 + 双腕 D405）
   recording: scene/recording.yaml
+  scene: scenes/dual_ur_pick_place.yaml
   # 仅开关；宽高/机位/话题名请改 recording.yaml
   camera:
     enabled: true

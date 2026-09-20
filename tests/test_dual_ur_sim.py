@@ -10,13 +10,13 @@ import yaml
 
 mujoco = pytest.importorskip("mujoco")
 
-from teleop_birth.backend import G1BackendStub, MujocoDualURBackend
-from teleop_birth.ee import DexHandStub, EECommand, ParallelGripper
-from teleop_birth.mapping import DualArmMapper
-from teleop_birth.pipeline import TeleopLoop
-from teleop_birth.schema import EXTREMITY_LEFT_EE, EXTREMITY_RIGHT_EE, SparseTarget, identity_pose
-from teleop_birth.sim import build_dual_ur5e_2f85
-from teleop_birth.xr import MockXRSource
+from teleop_birth.robot import G1BackendStub, MujocoDualURBackend
+from teleop_birth.robot.ee import DexHandStub, EECommand, ParallelGripper
+from teleop_birth.teleop.mapping import DualArmMapper
+from teleop_birth.teleop.pipeline import TeleopLoop
+from teleop_birth.teleop.schema import EXTREMITY_LEFT_EE, EXTREMITY_RIGHT_EE, SparseTarget, identity_pose
+from teleop_birth.robot.arm.ur5e import build_dual_ur5e_2f85
+from teleop_birth.teleop.xr import MockXRSource
 
 ROOT = Path(__file__).resolve().parents[1]
 

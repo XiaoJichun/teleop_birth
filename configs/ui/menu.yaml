@@ -1,47 +1,50 @@
 # =============================================================================
-# 终端菜单（./start.sh）
-# 改菜单文案/顺序/入口：本文件
-# 一键采集参数：configs/scene/cli.yaml → collect
+# 终端菜单（./start.sh）— 搭建 / 标定 / 遥操 / 采集
+# MenuApp 读取本文件渲染主菜单；actions[].handler 为 Python 入口 callable。
 # =============================================================================
-banner: "PET / teleop_birth 交互式终端"
-prompt: "请选择"
-instructions: "一键项直接读 configs/ 启动；改参数请编辑 YAML（见 doc/配置文件指南.md）"
+banner: "PET / teleop_birth"           # 启动横幅
+prompt: "请选择"                        # 选项前提示语
+instructions: "搭建场景 → 换臂/部署 → 标定 → 遥操/采集/推理；推理经 ROS 通讯插件收发观测与动作"
 exit_message: "再见。"
 press_enter_message: "按回车返回主菜单…"
+
 actions:
-  - id: pico_sim_one_click
-    label: "一键：Pico 仿真遥操"
-    handler: "teleop_birth.cli.actions:action_pico_sim_one_click"
-  - id: scene_collect_one_click
-    label: "一键：自动化采数据（开窗口可盯着看 → MCAP）"
-    handler: "teleop_birth.cli.actions:action_scene_collect_one_click"
-  - id: scene_generate_one_click
-    label: "一键：生成场景物品（红方块+蓝盘子）"
-    handler: "teleop_birth.cli.actions:action_scene_generate_one_click"
-  - id: scene_place_one_click
-    label: "一键：随机摆放物品"
-    handler: "teleop_birth.cli.actions:action_scene_place_one_click"
-  - id: run_teleop
-    label: "自定义：遥操配置（设备/算法/IK）"
-    handler: "teleop_birth.cli.actions:action_run_teleop"
-  - id: scene_generate_props
-    label: "自定义：生成物品（逐步提问）"
-    handler: "teleop_birth.cli.actions:action_scene_generate_props"
-  - id: scene_place_props
-    label: "自定义：摆放物品（逐步提问）"
-    handler: "teleop_birth.cli.actions:action_scene_place_props"
-  - id: scene_collect
-    label: "自定义：语义采集（逐步提问）"
-    handler: "teleop_birth.cli.actions:action_scene_collect"
+  - id: build_scene                 # 内部动作 id（日志/路由用）
+    label: "搭建场景"               # 终端显示名
+    handler: "teleop_birth.ui.flows.build_scene:action_build_scene"
+
+  - id: browse_deployed_scenes
+    label: "插件已部署场景"
+    handler: "teleop_birth.ui.flows.browse_scenes:action_browse_deployed_scenes"
+
+  - id: swap_scene_robot
+    label: "场景更换机器人"
+    handler: "teleop_birth.ui.flows.swap_robot:action_swap_scene_robot"
+
+  - id: camera_calib
+    label: "相机标定"
+    handler: "teleop_birth.ui.flows.camera_calib:action_camera_calib"
+
+  - id: pico_teleop_session
+    label: "Pico仿真遥操"
+    handler: "teleop_birth.ui.flows.teleop_session:action_pico_teleop_session"
+
+  - id: auto_collect_session
+    label: "自动数据采集"
+    handler: "teleop_birth.ui.flows.collect_session:action_auto_collect_session"
+
+  - id: inference_session
+    label: "推理场景"
+    handler: "teleop_birth.ui.flows.inference_session:action_inference_session"
+
   - id: setup_xrobo
     label: "安装 / 检查 Pico·XRobo 依赖"
-    handler: "teleop_birth.cli.actions:action_setup_xrobo"
-  - id: show_defaults
-    label: "查看默认配置摘要"
-    handler: "teleop_birth.cli.actions:action_show_defaults"
-  - id: run_tests
-    label: "运行单元测试"
-    handler: "teleop_birth.cli.actions:action_run_tests"
+    handler: "teleop_birth.ui.actions:action_setup_xrobo"
+
+  - id: list_assets
+    label: "查看资产 Catalog"
+    handler: "teleop_birth.ui.workshop:action_list_assets"
+
   - id: exit
     label: "退出"
-    handler: null
+    handler: null                   # null = 退出程序

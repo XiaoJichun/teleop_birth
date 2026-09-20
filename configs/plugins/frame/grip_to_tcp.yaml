@@ -1,0 +1,31 @@
+# =============================================================================
+# 握把体轴 → 夹爪体轴矩阵 M（§5.4）
+# mapper.grip_to_tcp 或 grip_to_tcp_mapping 引用 profiles.<name>。
+# 与 R_a 无关；只改体轴翻译表。换 home：tip_down / tip_forward。
+# =============================================================================
+
+profiles:
+  tip_down:
+    title: "尖端朝下 home（默认桌面抓取）"
+    grip_right: "+y"            # 握把右轴 → 夹爪轴
+    grip_up: "+x"
+    grip_aim: "+z"              # 工具接近轴
+    home_kind: tip_down
+    notes: "平握手柄 ↔ 朝下夹爪；历史 default_grip_to_tcp_M"
+
+  tip_forward:
+    title: "尖端朝前 home（水平接近）"
+    grip_right: "+x"
+    grip_up: "-y"
+    grip_aim: "+z"
+    home_kind: tip_forward
+    notes: "接近轴朝前时用；拧腕仍绕工具 +Z"
+
+  identity:
+    title: "恒等（消融）"
+    matrix:
+      - [1, 0, 0]
+      - [0, 1, 0]
+      - [0, 0, 1]
+    home_kind: tip_down
+    notes: "不做体轴翻译，只适合调试"

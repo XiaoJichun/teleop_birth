@@ -1,0 +1,17 @@
+# =============================================================================
+# 推理场景默认（菜单「推理场景」）
+# inference_session 读取；经 ROS 插件发布观测、订阅动作，见 comms。
+# =============================================================================
+comms: plugins/comms/ros_bridge.yaml   # ROS 通讯插件配置（相对 configs/）
+output_dir: logs/inference             # 推理日志/录像输出目录
+video:
+  fps: 20                              # 屏幕录像帧率
+  camera: third_person                   # 录制用相机名；无则用第一台
+  codec: mp4v                          # OpenCV  FourCC
+control_hz: 20.0                       # 推理环频率 (Hz)，与 comms.publish.rate_hz 对齐
+duration_s: 0                          # 0 = 直到用户中断 / 关窗口
+backend: device/backend/mujoco_dual_ur.yaml
+ik: algorithm/ik/dls.yaml
+end_effector: device/end_effector/gripper.yaml
+paths: device/paths/default.yaml
+recording: scene/recording.yaml        # 相机 topic 与机位（可被场景覆盖）

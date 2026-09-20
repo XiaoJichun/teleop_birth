@@ -1,0 +1,32 @@
+# =============================================================================
+# 桌面机械臂 base 统一配置
+# 场景 desktop_base.arm_id 引用本文件；换臂时只改 arm_id 与下方数值。
+# 加载：DesktopBasePlugin 读取 desktop_bases.<arm_id>。
+#
+#   T_world_contact = Trans(xy, table_top_z) @ Rot_z(yaw)
+#   T_contact_urdf  = Trans(0, 0, pedestal + origin_above_bottom)
+#   T_world_urdf    = T_world_contact @ T_contact_urdf
+#   mount_origin_z  = table_top_z + pedestal_height_m + origin_above_bottom_m
+# =============================================================================
+
+desktop_bases:
+  ur5e:
+    title: "UR5e（menagerie）"
+    origin_above_bottom_m: 0.0    # URDF 原点相对底座底面高度 (m)
+    pedestal_height_m: 0.0        # 桌面顶到 URDF 底面的垫块高度 (m)
+    base_body: base               # MJCF 中 base link 名
+    notes: "原点≈底座底面；启用 scene.desktop_base 后 mount_z 由桌面顶反推"
+
+  artixon_6a:
+    title: "Artixon Arm-6A"
+    origin_above_bottom_m: 0.0
+    pedestal_height_m: 0.02       # 相对桌面顶 2cm 垫块
+    base_body: arm_base_link
+    notes: "相对桌面顶 0.02 垫块；table_half=0.02 时等价于旧 table_z+0.04"
+
+  franka_panda:
+    title: "Franka Panda（占位）"
+    origin_above_bottom_m: 0.0
+    pedestal_height_m: 0.0
+    base_body: link0
+    notes: "接 menagerie 后按实测改 origin_above_bottom_m"

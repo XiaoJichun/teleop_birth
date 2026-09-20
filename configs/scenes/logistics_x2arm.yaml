@@ -1,0 +1,69 @@
+# =============================================================================
+# 插件场景清单：物流双 Arm-6A 分拣
+# SceneRegistry 注册；backend 加载 configs/robots/artixon_logistics_scene.yaml。
+# 遥操入口见 robots/artixon_teleop.yaml；含 TACTO DIGIT 四指垫。
+# =============================================================================
+id: logistics_x2arm
+type: logistics_x2arm
+title: 物流分拣 ArtiXon Arm-6A
+
+backend:
+  type: logistics_x2arm
+  robot_id: artixon_arm_6a
+  module_config: configs/robots/artixon_logistics_scene.yaml
+
+grippers:
+  - id: artixon_parallel       # 内置平行夹爪
+    side: left
+    builtin: true
+  - id: artixon_parallel
+    side: right
+    builtin: true
+
+cameras:
+  - name: third_person
+    type: world
+    role: third_person
+    camera_asset: realsense_d455
+    pos: [1.0, 0.0, 1.1]
+    lookat: [0.38, 0.0, 0.45]
+  - name: wrist_right
+    type: site
+    role: wrist
+    camera_asset: realsense_d405
+    mount: wrist_camera_bracket
+    site: R_tcp_pinch          # 右臂 TCP site（物流 MJCF）
+
+# TACTO DIGIT 视觉触觉垫（parent = 夹爪 link 名）
+sensors:
+  - name: L_digit_left
+    type: digit
+    parent: L_arm_gripper_left_link
+    local_origin: [0.028, -0.014, 0.0]
+    local_normal: [0.0, -1.0, 0.0]
+  - name: L_digit_right
+    type: digit
+    parent: L_arm_gripper_right_link
+    local_origin: [0.028, 0.014, 0.0]
+    local_normal: [0.0, 1.0, 0.0]
+  - name: R_digit_left
+    type: digit
+    parent: R_arm_gripper_left_link
+    local_origin: [0.028, -0.014, 0.0]
+    local_normal: [0.0, -1.0, 0.0]
+  - name: R_digit_right
+    type: digit
+    parent: R_arm_gripper_right_link
+    local_origin: [0.028, 0.014, 0.0]
+    local_normal: [0.0, 1.0, 0.0]
+
+physics:
+  anti_penetration: true
+  min_separation_m: 0.08       # 包裹/带面最小分离 (m)
+
+collect:
+  policy: pick_flip_place      # 左取→翻面→右推策略
+
+teleop:
+  enabled: true
+  config: configs/robots/artixon_teleop.yaml

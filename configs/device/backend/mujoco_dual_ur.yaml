@@ -26,6 +26,9 @@ scene:
     pos_xy: [0.0, 0.40]
     z_offset_from_base: -0.02
     rgba: [0.55, 0.40, 0.28, 1.0]
+  # 可选：用桌面 base 插件反推 mount_z（换臂时只改 arm_id）
+  desktop_base:
+    arm_id: ur5e
   ur5e_xml: "universal_robots_ur5e/ur5e.xml"
   gripper_xml: "robotiq_2f85/2f85.xml"
   gripper_attach_site: "attachment_site"

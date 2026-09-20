@@ -1,0 +1,7 @@
+# 腕部相机支架（通用法兰偏移）。
+title: Wrist camera bracket
+parent_kind: site
+# 相对 TCP/腕部 site
+pos: [-0.06, 0.0, 0.05]
+quat_wxyz: [0.7071, 0.0, 0.7071, 0.0]
+lookat_local: [0.10, 0.0, 0.0]

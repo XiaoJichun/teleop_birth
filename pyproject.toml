@@ -6,9 +6,12 @@ readme = "README.md"
 requires-python = ">=3.11,<3.14"
 dependencies = [
     "hydra-core>=1.3.2",
+    "matplotlib>=3.7",
+    "mplfonts>=0.0.11",
     "mujoco>=3.1",
     "numpy>=1.24",
     "omegaconf>=2.3.0",
+    "PyQt6>=6.5",
     "pyyaml>=6.0",
     "questionary>=2.1.1",
 ]
@@ -20,9 +23,33 @@ ik = [
     "ssik>=5.0.0",
 ]
 collect = [
+    "h5py>=3.10.0",
     "foxglove-schemas-protobuf>=0.2.0",
     "mcap>=1.2.0",
     "mcap-protobuf-support>=0.5.0",
+    "pillow>=10.0.0",
+]
+plot = [
+    "matplotlib>=3.7",
+]
+viz = [
+    "PyQt6>=6.5",
+    "matplotlib>=3.7",
+]
+tacto = [
+    "networkx>=3.0",
+    "opencv-python-headless>=4.8",
+    "pybullet>=2.8.1",
+    "pyrender>=0.1.43",
+    "scipy>=1.10",
+    "trimesh>=3.0",
+]
+# ROS2：系统需已安装/source 对应发行版；此处仅声明 Python 包名（若用 pip 版 rclpy）
+ros = [
+    # "rclpy",  # 通常由 ROS2 发行版提供，勿与系统包混装
+]
+inference = [
+    "opencv-python-headless>=4.8",
     "pillow>=10.0.0",
 ]
 
@@ -38,8 +65,8 @@ packages = ["src/teleop_birth"]
 "src/teleop_birth" = "teleop_birth"
 
 [project.scripts]
-teleop-birth = "teleop_birth.cli.app:main"
-birth-teleop = "teleop_birth.cli.app:main"
+teleop-birth = "teleop_birth.ui.app:main"
+birth-teleop = "teleop_birth.ui.app:main"
 
 [dependency-groups]
 dev = ["pytest>=7.0"]

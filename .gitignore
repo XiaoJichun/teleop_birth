@@ -17,4 +17,5 @@ third_party/xrobo_pybind_build/
 third_party/platform-tools/
 third_party/XRoboToolkit-PC-Service-Pybind/
 third_party/mujoco_menagerie/
+third_party/tacto/
 tools/bin/adb
